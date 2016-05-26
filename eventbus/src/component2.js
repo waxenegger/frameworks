@@ -1,6 +1,4 @@
-require('./ome.js');
-
-ome.Component2 = function() {
+var Component2 = function() {
 	this.setWebGlue = function(web_glue, image_id) {
 		this.requestDataAndInitializeWidget = function(id) {
 			web_glue.request(
@@ -34,4 +32,4 @@ ome.Component2 = function() {
 	}
 };
 
-module.exports = ome.Component2;
+module.exports = Component2;

@@ -1,6 +1,4 @@
-require('./ome.js');
-
-ome.Component1 = function(web_glue, image_id) {
+var Component1 = function(web_glue, image_id) {
 	this.requestDataAndInitializeWidget = function(id) {
 		web_glue.request(
 			{url : "https://demo.openmicroscopy.org/webgateway/imgData/" + id,
@@ -35,4 +33,4 @@ ome.Component1 = function(web_glue, image_id) {
 	this.requestDataAndInitializeWidget(image_id);
 };
 
-module.exports = ome.Component1;
+module.exports = Component1;
