@@ -1,0 +1,126 @@
+<project name="ome-web-glue" default="build">
+
+	<property name="version.major" value="1" />
+	<property name="version.minor" value="0" />
+
+	<property name="libs" value="${basedir}/libs" />
+	<property name="jsdoc.js" value="${basedir}/node_modules/jsdoc/jsdoc.js" />
+	<property name="uglify.js" value="${basedir}/node_modules/uglify-js/bin/uglifyjs" />
+
+	<property name="src" value="${basedir}/src" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="example.js" value="${basedir}/example/js" />
+
+	<property name="dist.name"
+			value="${build.dir}/ome-webglue-${version.major}.${version.minor}.js" />
+	<property name="debug.name"
+			value="${build.dir}/ome-webglue-${version.major}.${version.minor}-debug.js" />
+
+	<target name="clean" description="deletes all build files">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="uglify-web-glue" depends="clean">
+		<mkdir dir="${build.dir}" />
+		<exec executable="npm">
+			<arg line="install uglify-js" />
+		</exec>
+
+		<concat destfile="${build.dir}/web_glue_before_uglification.js" overwrite="true">
+/* THIS IS BEFORE UGLIFICATION. USE TO FIND ERRORS THAT UGLIFY POINTS OUT
+ * AND CORRECT THEM IN THE CORRESPONDING SOURCE FILES !!!!
+ */
+(function (root, factory) {
+		if(typeof exports !== 'undefined') {
+			exports.ome = factory(root);
+			} else if(typeof define === 'function' &amp;&amp; define.amd) {
+			define('ome-web-glue-js', [], function() {
+					root.ome = factory(root);
+					return root.ome();
+				});
+			} else {
+				root.ome = factory(root);
+		}
+	}(this, function (ctx) {
+		</concat>
+		<concat destfile="${build.dir}/web_glue_before_uglification.js" append="true" eol="crlf" fixlastline="true">
+			<fileset file="${src}/glue.js"/>
+			<fileset file="${src}/utils.js"/>
+			<fileset file="${src}/events.js"/>
+			<fileset file="${src}/data.js"/>
+			<fileset file="${src}/webglue.js"/>
+		</concat>
+		<concat destfile="${build.dir}/web_glue_before_uglification.js" append="true">
+	return ome;
+}));
+		</concat>
+
+		<exec executable="${uglify.js}">
+			<arg line="--compress --mangle --output ${dist.name}.tmp --verbose -- ${build.dir}/web_glue_before_uglification.js" />
+		</exec>
+	</target>
+
+	<target name="webglue" depends="uglify-web-glue" description="builds compressed version of ONLY web-glue">
+		<move file="${dist.name}.tmp" tofile="${dist.name}" overwrite="true" force="true"></move>
+	</target>
+
+	<target name="build" depends="uglify-web-glue" description="builds compressed version (INCL: minified backbone.js)">
+		<concat destfile="${dist.name}" overwrite="true" eol="crlf" fixlastline="true">
+			<fileset file="${libs}/underscore-min.js"/>
+			<fileset file="${libs}/backbone-min.js"/>
+			<fileset file="${dist.name}.tmp"/>
+		</concat>
+		<delete file="${dist.name}.tmp" />
+	</target>
+
+	<target name="build-debug" description="builds debug version">
+		<concat destfile="${debug.name}" overwrite="true" fixlastline="true">
+			<fileset file="${libs}/underscore.js"/>
+			<fileset file="${libs}/backbone.js"/>
+		</concat>
+		<concat destfile="${debug.name}" append="true">
+(function (root, factory) {
+	 if(typeof exports !== 'undefined') {
+		 exports.ome = factory(root);
+	 } else if(typeof define === 'function' &amp;&amp; define.amd) {
+		 define('ome-web-glue-js', [], function() {
+			 root.ome = factory(root);
+			 return root.ome();
+		 });
+	 } else {
+			 root.ome = factory(root);
+	 }
+ }(this, function (ctx) {
+		</concat>
+		<concat destfile="${debug.name}" append="true" fixlastline="true">
+			<fileset file="${src}/glue.js"/>
+			<fileset file="${src}/utils.js"/>
+			<fileset file="${src}/events.js"/>
+			<fileset file="${src}/data.js"/>
+			<fileset file="${src}/webglue.js"/>
+		</concat>
+		<concat destfile="${debug.name}" append="true">
+	return ome;
+}));
+		</concat>
+	</target>
+
+	<target name="docs" description="generates the docs from jsdocs">
+		<exec executable="npm">
+			<arg line="install jsdoc" />
+		</exec>
+		<delete dir="${build.dir}/docs" />
+		<mkdir dir="${build.dir}/docs" />
+		<exec executable="${jsdoc.js}">
+  		<arg line="-r ${src} -d ${build.dir}/docs -p --verbose" />
+		</exec>
+	</target>
+
+	<target name="example" depends="build-all" description="deploys built dist to example">
+		<copy file="${debug.name}" todir="${example.js}" overwrite="true"/>
+		<copy file="${dist.name}" todir="${example.js}" overwrite="true"/>
+	</target>
+
+	<target name="build-all" depends="build,build-debug" description="builds compressed as well as debug version" />
+
+</project>
