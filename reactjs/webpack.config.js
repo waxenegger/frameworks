@@ -1,20 +1,17 @@
 var webpack = require('webpack');
-//var UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin');
 
 module.exports = {
   entry: './src/example.js',
   output: {
-    filename: './example/js/example.js'
+    filename: './example/js/example.js',
+		library : ['window', 'webglue'],
+		libraryTarget: "var",
+		target : "web"
   },
-	/*
-	plugins: [
-		new UglifyJsPlugin({
-			exclude: ['./lib/ome-ol3-viewer.js'],
-    	mangle: {
-        except: ['$super', '$', 'exports', 'require']
-    	}
-		})
-	],*/
+	externals: {
+			 "web-glue"  : "ome.glue",
+			 "ol3viewer" : "ome.ol3"
+	 },
   module: {
     loaders: [
       {
