@@ -6,6 +6,10 @@ module.exports = {
   output: {
     filename: './example/js/example.js'
   },
+	externals: {
+			 "web-glue"  : "ome.glue",
+			 "ol3viewer" : "ome.ol3"
+	 },
 	/*
 	plugins: [
 		new UglifyJsPlugin({
