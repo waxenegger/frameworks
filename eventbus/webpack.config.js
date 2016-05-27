@@ -4,7 +4,10 @@ var webpack = require('webpack');
 module.exports = {
   entry: './src/example.js',
   output: {
-    filename: './example/js/example.js'
+    filename: './example/js/example.js',
+		library : ['window'],
+		libraryTarget: "var",
+		target : "web",
   },
 	externals: {
 			 "web-glue"  : "ome.glue",
