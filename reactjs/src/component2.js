@@ -39,7 +39,6 @@ var Component2 = React.createClass({
 			function(data, uid, time) {
 				this.state.image_id = data['id'];
 				this.requestData();
-				this.render();
 			}, this);
 	},
 	onChangeT: function(event) {

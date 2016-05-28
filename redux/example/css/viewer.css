@@ -1,0 +1,47 @@
+html {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	width: 97%;
+	height: 97%;
+}
+
+#ome_viewer {
+	width: 100%;
+	height: 100%;
+}
+
+.ol-rotate {
+	top:2.5em;
+	right:.5em;
+	transition:opacity .25s linear,visibility 0s linear;
+}
+
+#ome_context_menu {
+	background-color: white;
+	padding: 5px;
+	border: 1px solid #cccccc;
+	min-width: 150px;
+	min-height: 20px;
+}
+
+#ome_context_menu .header {
+	width: 95%;
+	height: 95%;
+}
+#ome_context_menu .title {
+	font-weight: bold;
+	text-decoration: underline;
+}
+#ome_context_menu .close {
+	color: black;
+	text-decoration: none;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+.selected {
+	background-color: gray;
+}

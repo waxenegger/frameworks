@@ -1,39 +1,42 @@
 var React = require('react');
 
+var Actions = require('./actions.js');
+
 var Component1 = React.createClass({
+	contextTypes : {store: React.PropTypes.object.isRequired},
   getInitialState: function() {
     return {
-			image_id : this.props.image_id,
+			image_id : parseInt(this.props.image_id),
 			channels : null
 		};
   },
-	requestData : function() {
+	requestData : function(id) {
 		this.serverRequest =  $.ajax.call(this,
-			{url : "https://demo.openmicroscopy.org/webgateway/imgData/" +
-				this.state.image_id + "/",
+			{url : "https://demo.openmicroscopy.org/webgateway/imgData/" + id + "/",
 				dataType : "jsonp",
 				success: function(data, what, whatElse) {
-					this.setState({ image_id : this.state.image_id,
+					this.setState({ image_id : data.id,
 						channels : data.channels});}.bind(this)
 			});
 	},
-	subscribe : function() {
-		this.props.web_glue.subscribe(ome.glue.EVENTS.IMAGE_CHANGE,
-			function(data, uid, time) {
-				this.state.image_id = data['id'];
-				this.requestData();
-			}, this);
-	},
   componentDidMount: function() {
-		this.requestData();
-		this.subscribe();
+		this.subscription = this.context.store.subscribe(this.performAction);
+		this.requestData(this.state.image_id);
   },
   componentWillUnmount: function() {
-    this.serverRequest.abort();
-		this.props.web_glue.unsubscribe(
-			this,
-			ome.glue.EVENTS.IMAGE_CHANGE.event);
+		this.subscription();
+		this.serverRequest.abort();
   },
+	performAction : function() {
+		var state = this.context.store.getState();
+		if (state.length === 0) return;
+
+		var notification = state[state.length-1];
+		if (notification.action !== Actions.ACTIONS.CHANGE_IMAGE ||
+				notification.data.id === this.state.image_id) return;
+
+		this.requestData(notification.data.id);
+	},
   onChange: function(event) {
 		var index = parseInt(event.target.value);
 		this.state.channels[index].active = event.target.checked;
@@ -44,10 +47,10 @@ var Component1 = React.createClass({
 				if (this.state.channels[c].active)
 					selected.push(parseInt(c));
 
-		this.props.web_glue.publish(
-			ome.glue.EVENTS.IMAGE_DIMENSION_CHANGE,
-			 { id: parseInt(this.state.image_id),
-				 dim: 'c', value: selected});
+		this.context.store.dispatch(
+			{ type: Actions.ACTIONS.CHANGE_DIMENSION,
+				data: {id : parseInt(this.state.image_id),
+					 		 dim : 'c', value : selected}});
 	},
   render: function() {
 		if (this.state.channels === null)
