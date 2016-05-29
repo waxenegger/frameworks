@@ -1,9 +1,14 @@
 var React = require('react');
+var EVENTS = require('./events.js');
 
 var Component1 = React.createClass({
+	contextTypes : {
+		eventbus : React.PropTypes.object.isRequired,
+		initial_image_id : React.PropTypes.string.isRequired
+	},
   getInitialState: function() {
     return {
-			image_id : this.props.image_id,
+			image_id : parseInt(this.context.initial_image_id),
 			channels : null
 		};
   },
@@ -13,26 +18,22 @@ var Component1 = React.createClass({
 				this.state.image_id + "/",
 				dataType : "jsonp",
 				success: function(data, what, whatElse) {
-					this.setState({ image_id : this.state.image_id,
+					this.setState({ image_id : data.id,
 						channels : data.channels});}.bind(this)
 			});
 	},
-	subscribe : function() {
-		this.props.web_glue.subscribe(ome.glue.EVENTS.IMAGE_CHANGE,
+  componentDidMount: function() {
+		this.requestData();
+		this.context.eventbus.subscribe(
+			EVENTS.IMAGE_CHANGE,
 			function(data, uid, time) {
 				this.state.image_id = data['id'];
 				this.requestData();
 			}, this);
-	},
-  componentDidMount: function() {
-		this.requestData();
-		this.subscribe();
   },
   componentWillUnmount: function() {
     this.serverRequest.abort();
-		this.props.web_glue.unsubscribe(
-			this,
-			ome.glue.EVENTS.IMAGE_CHANGE.event);
+		this.context.eventbus.unsubscribe(this, EVENTS.IMAGE_CHANGE.event);
   },
   onChange: function(event) {
 		var index = parseInt(event.target.value);
@@ -44,10 +45,10 @@ var Component1 = React.createClass({
 				if (this.state.channels[c].active)
 					selected.push(parseInt(c));
 
-		this.props.web_glue.publish(
-			ome.glue.EVENTS.IMAGE_DIMENSION_CHANGE,
-			 { id: parseInt(this.state.image_id),
-				 dim: 'c', value: selected});
+		this.context.eventbus.publish(
+			EVENTS.IMAGE_DIMENSION_CHANGE,
+			{ id: parseInt(this.state.image_id),
+				dim: 'c', value: selected});
 	},
   render: function() {
 		if (this.state.channels === null)
