@@ -1,3 +1,5 @@
 node_modules
 eventbus/example/js
 reactjs/example/js
+.project
+.settings
