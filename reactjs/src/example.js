@@ -10,30 +10,30 @@ var eventbus = new events.EventBus();
 
 var initial_image_id = 205740;
 var Example = React.createClass({
-	childContextTypes : {
-		eventbus : React.PropTypes.object,
-		initial_image_id : React.PropTypes.string.isRequired
-	},
-	getChildContext: function() {
-			return {
-				eventbus: this.props.eventbus,
-				initial_image_id: this.props.initial_image_id
-			};
-	},
-	render: function() {
-		return (
-			<div>
-				<Component1 />
-				<Component2 />
-				<WrappedViewer />
-			</div>
-		);
-  }
+    childContextTypes : {
+        eventbus : React.PropTypes.object,
+        initial_image_id : React.PropTypes.string.isRequired
+    },
+    getChildContext: function() {
+        return {
+            eventbus: this.props.eventbus,
+            initial_image_id: this.props.initial_image_id
+        };
+    },
+    render: function() {
+        return (
+                <div>
+                <Component1 />
+                <Component2 />
+                <WrappedViewer />
+                </div>
+        );
+    }
 });
 
 ReactDOM.render(
-  <Example initial_image_id="205740" eventbus={eventbus}/>,
-  document.getElementById('example'));
+        <Example initial_image_id="205740" eventbus={eventbus}/>,
+        document.getElementById('example'));
 
 
-module.exports = eventbus;
+        module.exports = eventbus;

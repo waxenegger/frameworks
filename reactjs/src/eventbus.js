@@ -8,13 +8,13 @@ var events = {};
  * @return {boolean} true if array, otherwise false
  */
 events.isArray = function(something) {
-	if (typeof(something) !== 'object' || something === null) return false;
+    if (typeof(something) !== 'object' || something === null) return false;
 
-	if (something instanceof Array ||
-				Object.prototype.toString.call(null, something) === '[object Array]')
-				return true;
+    if (something instanceof Array ||
+            Object.prototype.toString.call(null, something) === '[object Array]')
+        return true;
 
-	return false;
+    return false;
 }
 
 /**
@@ -24,32 +24,32 @@ events.isArray = function(something) {
  * <p>A publish/subscribe Facility</p>
  */
 events.EventBus = function() {
-	/**
-	 * autoincrement unique within a 'page session'
-	 *
-	 * @private
-	 * @memberof events.EventBus
-	 * @type {number}
-	 */
-	this.uid_ = 0
+    /**
+     * autoincrement unique within a 'page session'
+     *
+     * @private
+     * @memberof events.EventBus
+     * @type {number}
+     */
+    this.uid_ = 0
 
-	/**
-	 * event list
-	 *
-	 * @private
-	 * @memberof events.EventBus
-	 * @type {Object}
-	 */
-	this.events_ = {};
+    /**
+     * event list
+     *
+     * @private
+     * @memberof events.EventBus
+     * @type {Object}
+     */
+    this.events_ = {};
 
-	/**
-	 * subscriber list
-	 *
-	 * @private
-	 * @memberof events.EventBus
-	 * @type {Object}
-	 */
-	this.subscribers_ = {};
+    /**
+     * subscriber list
+     *
+     * @private
+     * @memberof events.EventBus
+     * @type {Object}
+     */
+    this.subscribers_ = {};
 }
 
 /**
@@ -61,10 +61,10 @@ events.EventBus = function() {
  * @return {string} the next autoincremented uid (incl. prefix)
  */
 events.EventBus.prototype.getNextUid = function(prefix) {
-	if (prefix !== 'string')
-		prefix = "uid_";
+    if (prefix !== 'string')
+        prefix = "uid_";
 
-	return prefix + (++this.uid_);
+    return prefix + (++this.uid_);
 }
 
 /**
@@ -76,14 +76,14 @@ events.EventBus.prototype.getNextUid = function(prefix) {
  * @return {string|null} the uid (if exists/set or null)
  */
 events.EventBus.prototype.getOrSetSubscriberUid = function(instance) {
-	if (typeof(instance) !== 'object' || events.isArray(instance) ||
-	 		instance === null) return null;
+    if (typeof(instance) !== 'object' || events.isArray(instance) ||
+            instance === null) return null;
 
-	if (typeof(instance.subscriber_uid) !== 'string' ||
-			instance.subscriber_uid.length === 0)
-		instance.subscriber_uid = this.getNextUid("subscriber_");
+    if (typeof(instance.subscriber_uid) !== 'string' ||
+            instance.subscriber_uid.length === 0)
+        instance.subscriber_uid = this.getNextUid("subscriber_");
 
-	return instance.subscriber_uid;
+    return instance.subscriber_uid;
 }
 
 /**
@@ -95,16 +95,16 @@ events.EventBus.prototype.getOrSetSubscriberUid = function(instance) {
  * @return {string|null} the subcriber's uid (if already in list or null)
  */
 events.EventBus.prototype.hasSubscribed = function(instance) {
-	if (typeof(instance) !== 'object' || events.isArray(instance) || instance === null)
-		return null;
+    if (typeof(instance) !== 'object' || events.isArray(instance) || instance === null)
+        return null;
 
-	var sub_uid = this.getOrSetSubscriberUid(instance);
-	if (sub_uid === null ||
-			typeof(this.subscribers_[sub_uid]) !== 'object' ||
-			events.isArray(this.subscribers_[sub_uid]))
-		return null;
+    var sub_uid = this.getOrSetSubscriberUid(instance);
+    if (sub_uid === null ||
+            typeof(this.subscribers_[sub_uid]) !== 'object' ||
+            events.isArray(this.subscribers_[sub_uid]))
+        return null;
 
-	return sub_uid;
+    return sub_uid;
 }
 
 /**
@@ -116,15 +116,15 @@ events.EventBus.prototype.hasSubscribed = function(instance) {
  * @return {boolean?} true if the instance was subscribed for a certain event
  */
 events.EventBus.prototype.hasSubscribedForEvent = function(instance, event) {
-	var sub_uid = this.hasSubscribed(instance);
-	if (sub_uid === null) return false;
+    var sub_uid = this.hasSubscribed(instance);
+    if (sub_uid === null) return false;
 
-	var subscriber = this.subscribers_[sub_uid];
-	for (var e in subscriber)
-	 	if (event.toLowerCase() === e)
-			return true; // we are already subscribed for this type of event
+    var subscriber = this.subscribers_[sub_uid];
+    for (var e in subscriber)
+        if (event.toLowerCase() === e)
+            return true; // we are already subscribed for this type of event
 
-	return false;
+    return false;
 }
 
 /**
@@ -137,27 +137,27 @@ events.EventBus.prototype.hasSubscribedForEvent = function(instance, event) {
  * @return {boolean} true if the data format satisfies its definition, otherwise false
  */
 events.EventBus.prototype.checkEventData = function(event, data) {
-	if (typeof(event.properties) !== 'undefined' &&
-	 	events.isArray(event.properties)) {
-			for (var p in event.properties) {
-				var prop = event.properties[p];
-				if (typeof(prop.name) !== 'string') {
-					console.error("Propery name can only be a string!")
-					return false;
-				}
-				if (typeof(data[prop.name]) === 'undefined' ||
-						(typeof(prop.type) === 'string' && prop.type.toLowerCase() === "array" &&
-				 			!events.isArray(data[prop.name])) ||
-						(typeof(prop.type) === 'string' && prop.type.toLowerCase() !== "array" &&
-							typeof(data[prop.name]) !== prop.type.toLowerCase())
-					) {
-					console.error("Data format violates definition for property: " + prop.name);
-					return false;
-				}
-			}
-	}
+    if (typeof(event.properties) !== 'undefined' &&
+            events.isArray(event.properties)) {
+        for (var p in event.properties) {
+            var prop = event.properties[p];
+            if (typeof(prop.name) !== 'string') {
+                console.error("Propery name can only be a string!")
+                return false;
+            }
+            if (typeof(data[prop.name]) === 'undefined' ||
+                    (typeof(prop.type) === 'string' && prop.type.toLowerCase() === "array" &&
+                            !events.isArray(data[prop.name])) ||
+                            (typeof(prop.type) === 'string' && prop.type.toLowerCase() !== "array" &&
+                                    typeof(data[prop.name]) !== prop.type.toLowerCase())
+            ) {
+                console.error("Data format violates definition for property: " + prop.name);
+                return false;
+            }
+        }
+    }
 
-	return true;
+    return true;
 }
 
 /**
@@ -170,33 +170,33 @@ events.EventBus.prototype.checkEventData = function(event, data) {
  * @param {string?} sender_uid/publisher's uid (useful to identify 'self' messages)
  */
 events.EventBus.prototype.publish = function(event, data, sender_uid) {
-	var type = null;
-	if (typeof(event) === "object" && !events.isArray(event) &&
-				typeof(event.event) === 'string' && event.event.length > 0)
-			type = event.event;
-	else if (typeof(event) === 'string' && event.length > 0)
-		type = event;
+    var type = null;
+    if (typeof(event) === "object" && !events.isArray(event) &&
+            typeof(event.event) === 'string' && event.event.length > 0)
+        type = event.event;
+    else if (typeof(event) === 'string' && event.length > 0)
+        type = event;
 
-	if (type === null)
-		throw Error("call publish with arguments: event(string or predefined object) and, optionally: " +
-			"data(Object)");
+    if (type === null)
+        throw Error("call publish with arguments: event(string or predefined object) and, optionally: " +
+        "data(Object)");
 
-	if (typeof(event) === 'object' &&
-				typeof(data) !== 'undefined' && data !== null &&
-				!this.checkEventData(event, data)) return;
+    if (typeof(event) === 'object' &&
+            typeof(data) !== 'undefined' && data !== null &&
+            !this.checkEventData(event, data)) return;
 
-	var uid = typeof(sender_uid) === 'string' ?
-	 	sender_uid : this.getNextUid("webglue_uid_");
-	var payload = typeof(data) === 'object' && data ? data : {};
-	var timestamp = new Date().getTime();
+    var uid = typeof(sender_uid) === 'string' ?
+            sender_uid : this.getNextUid("webglue_uid_");
+    var payload = typeof(data) === 'object' && data ? data : {};
+    var timestamp = new Date().getTime();
 
-	type = type.toLowerCase();
-	if (!events.isArray(this.events_[type])) return;
+    type = type.toLowerCase();
+    if (!events.isArray(this.events_[type])) return;
 
-	for	(var e in this.events_[type]) {
-		var recipient = this.events_[type][e];
-		recipient.callback.call(recipient.context, payload, uid, timestamp);
-	}
+    for	(var e in this.events_[type]) {
+        var recipient = this.events_[type][e];
+        recipient.callback.call(recipient.context, payload, uid, timestamp);
+    }
 }
 
 /**
@@ -209,56 +209,56 @@ events.EventBus.prototype.publish = function(event, data, sender_uid) {
  * @param {Object} context the context for excuting the callback
  */
 events.EventBus.prototype.subscribe = function(event, callback, context) {
-	var type = null;
-	if (typeof(event) === "object" && !events.isArray(event) &&
-				typeof(event.event) === 'string' && event.event.length > 0)
-			type = event.event;
-	else if (typeof(event) === 'string' && event.length > 0)
-		type = event;
+    var type = null;
+    if (typeof(event) === "object" && !events.isArray(event) &&
+            typeof(event.event) === 'string' && event.event.length > 0)
+        type = event.event;
+    else if (typeof(event) === 'string' && event.length > 0)
+        type = event;
 
-	if (type === null || typeof(callback) !== 'function' ||
-	 		(typeof(context) === 'undefined') || context === null)
-			throw Error("call subscribe with arguments: event(string or predefined object)," +
-			 	"callback(function), context(object instance subscribing)!");
+    if (type === null || typeof(callback) !== 'function' ||
+            (typeof(context) === 'undefined') || context === null)
+        throw Error("call subscribe with arguments: event(string or predefined object)," +
+        "callback(function), context(object instance subscribing)!");
 
-	var sub_uid = this.getOrSetSubscriberUid(context);
+    var sub_uid = this.getOrSetSubscriberUid(context);
 
-	if (this.hasSubscribed(context) === null)
-		this.subscribers_[sub_uid] = {}; // lets add us
+    if (this.hasSubscribed(context) === null)
+        this.subscribers_[sub_uid] = {}; // lets add us
 
-	if (this.hasSubscribedForEvent(context, type))
-		return; // we won't allow multiple subscribes per context for the same event
+    if (this.hasSubscribedForEvent(context, type))
+        return; // we won't allow multiple subscribes per context for the same event
 
-	var nonBlockingWrapper = function() {
-		var args = [];
-		var senderOrMessageUid = null;
-		var numOfArgs = arguments.length;
-		if(numOfArgs > 0) {
-			for(var i=0; i<numOfArgs; i++){
-				args.push(arguments[i]);
-				if (i === 1 && typeof(arguments[i]) === 'string') // the uid (if exists)
-					senderOrMessageUid = arguments[i];
-			}
-		}
+    var nonBlockingWrapper = function() {
+        var args = [];
+        var senderOrMessageUid = null;
+        var numOfArgs = arguments.length;
+        if(numOfArgs > 0) {
+            for(var i=0; i<numOfArgs; i++){
+                args.push(arguments[i]);
+                if (i === 1 && typeof(arguments[i]) === 'string') // the uid (if exists)
+                    senderOrMessageUid = arguments[i];
+            }
+        }
 
-		if (senderOrMessageUid && senderOrMessageUid === sub_uid)
-			return;
+        if (senderOrMessageUid && senderOrMessageUid === sub_uid)
+            return;
 
-		setTimeout(function() {
-			callback.apply(
-				(typeof(context) !== 'undefined' && context) ? context : this,
-				args);
-		}, 0);
-	}
+        setTimeout(function() {
+            callback.apply(
+                    (typeof(context) !== 'undefined' && context) ? context : this,
+                            args);
+        }, 0);
+    }
 
-	var event = type.toLowerCase();
-	if (!events.isArray(this.events_[event]))
-		this.events_[event] = [];
-	this.events_[event].push(
-		{"callback" : nonBlockingWrapper,
-		 "context" : context,
-	 	 "sub_uid" : sub_uid});
-	this.subscribers_[sub_uid][event] = true;
+    var event = type.toLowerCase();
+    if (!events.isArray(this.events_[event]))
+        this.events_[event] = [];
+    this.events_[event].push(
+            {"callback" : nonBlockingWrapper,
+                "context" : context,
+                "sub_uid" : sub_uid});
+    this.subscribers_[sub_uid][event] = true;
 }
 
 /**
@@ -269,35 +269,35 @@ events.EventBus.prototype.subscribe = function(event, callback, context) {
  * @param {string?} event the event type/topic
  */
 events.EventBus.prototype.unsubscribe = function(subscriber, event) {
-	if (typeof(subscriber) === 'undefined' || subscriber === null)
-		throw Error("call unsubscribe with arguments: subscriber(object instance) " +
-			"and, optionally, event type(string)!");
+    if (typeof(subscriber) === 'undefined' || subscriber === null)
+        throw Error("call unsubscribe with arguments: subscriber(object instance) " +
+        "and, optionally, event type(string)!");
 
-	var eventType =
-		typeof(event) === 'string' && event.length > 0 ?
-	 		event.toLowerCase() : null;
+    var eventType =
+        typeof(event) === 'string' && event.length > 0 ?
+                event.toLowerCase() : null;
 
-	for (var e in this.events_) {
-		var ev = this.events_[e];
-		if (eventType && eventType !== e)
-			continue;
-		for (var s in ev) {
-			if (subscriber.subscriber_uid === this.events_[e][s].sub_uid) {
-				ev = ev.splice(parseInt(s), 1);
-			}
-		}
-	}
-	var subscribedEvents = this.subscribers_[subscriber.subscriber_uid];
-	if (eventType === null) {
-		subscribedEvents = null; // wipe out all
-		delete this.subscribers_[subscriber.subscriber_uid]; // delete entry;
-		return;
-	}
-	for (e in subscribedEvents)
-		if (typeof(subscribedEvents[e]) !== 'undefined' && e === eventType) {
-			delete subscribedEvents[e];
-			break;
-		}
+                for (var e in this.events_) {
+                    var ev = this.events_[e];
+                    if (eventType && eventType !== e)
+                        continue;
+                    for (var s in ev) {
+                        if (subscriber.subscriber_uid === this.events_[e][s].sub_uid) {
+                            ev = ev.splice(parseInt(s), 1);
+                        }
+                    }
+                }
+                var subscribedEvents = this.subscribers_[subscriber.subscriber_uid];
+                if (eventType === null) {
+                    subscribedEvents = null; // wipe out all
+                    delete this.subscribers_[subscriber.subscriber_uid]; // delete entry;
+                    return;
+                }
+                for (e in subscribedEvents)
+                    if (typeof(subscribedEvents[e]) !== 'undefined' && e === eventType) {
+                        delete subscribedEvents[e];
+                        break;
+                    }
 }
 
 module.exports = events;
