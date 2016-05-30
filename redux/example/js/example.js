@@ -61,23 +61,23 @@ var window = window || {}; window["example"] =
 
 	var initial_image_id = 205740;
 	var Example = React.createClass({
-			displayName: 'Example',
+	    displayName: 'Example',
 
-			render: function render() {
-					return React.createElement(
-							'div',
-							null,
-							React.createElement(Component1, { image_id: '205740' }),
-							React.createElement(Component2, { image_id: '205740' }),
-							React.createElement(WrappedViewer, { image_id: '205740' })
-					);
-			}
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            null,
+	            React.createElement(Component1, { image_id: '205740' }),
+	            React.createElement(Component2, { image_id: '205740' }),
+	            React.createElement(WrappedViewer, { image_id: '205740' })
+	        );
+	    }
 	});
 
 	ReactDOM.render(React.createElement(
-			Provider,
-			{ store: ActionStore },
-			React.createElement(Example, null)
+	    Provider,
+	    { store: ActionStore },
+	    React.createElement(Example, null)
 	), document.getElementById('example'));
 
 	module.exports = { store: ActionStore, actions: Actions.ACTIONS };
@@ -21520,74 +21520,74 @@ var window = window || {}; window["example"] =
 	var Actions = __webpack_require__(186);
 
 	var Component1 = React.createClass({
-		displayName: 'Component1',
+	    displayName: 'Component1',
 
-		contextTypes: { store: React.PropTypes.object.isRequired },
-		getInitialState: function getInitialState() {
-			return {
-				image_id: parseInt(this.props.image_id),
-				channels: null
-			};
-		},
-		requestData: function requestData(id) {
-			this.serverRequest = $.ajax.call(this, { url: "https://demo.openmicroscopy.org/webgateway/imgData/" + id + "/",
-				dataType: "jsonp",
-				success: function (data, what, whatElse) {
-					this.setState({ image_id: data.id,
-						channels: data.channels });
-				}.bind(this)
-			});
-		},
-		componentDidMount: function componentDidMount() {
-			this.subscription = this.context.store.subscribe(this.performAction);
-			this.requestData(this.state.image_id);
-		},
-		componentWillUnmount: function componentWillUnmount() {
-			this.subscription();
-			this.serverRequest.abort();
-		},
-		performAction: function performAction() {
-			var state = this.context.store.getState();
-			if (state.length === 0) return;
+	    contextTypes: { store: React.PropTypes.object.isRequired },
+	    getInitialState: function getInitialState() {
+	        return {
+	            image_id: parseInt(this.props.image_id),
+	            channels: null
+	        };
+	    },
+	    requestData: function requestData(id) {
+	        this.serverRequest = $.ajax.call(this, { url: "https://demo.openmicroscopy.org/webgateway/imgData/" + id + "/",
+	            dataType: "jsonp",
+	            success: function (data, what, whatElse) {
+	                this.setState({ image_id: data.id,
+	                    channels: data.channels });
+	            }.bind(this)
+	        });
+	    },
+	    componentDidMount: function componentDidMount() {
+	        this.subscription = this.context.store.subscribe(this.performAction);
+	        this.requestData(this.state.image_id);
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        this.subscription();
+	        this.serverRequest.abort();
+	    },
+	    performAction: function performAction() {
+	        var state = this.context.store.getState();
+	        if (state.length === 0) return;
 
-			var notification = state[state.length - 1];
-			if (notification.action !== Actions.ACTIONS.CHANGE_IMAGE || notification.data.id === this.state.image_id) return;
+	        var notification = state[state.length - 1];
+	        if (notification.action !== Actions.ACTIONS.CHANGE_IMAGE || notification.data.id === this.state.image_id) return;
 
-			this.requestData(notification.data.id);
-		},
-		onChange: function onChange(event) {
-			var index = parseInt(event.target.value);
-			this.state.channels[index].active = event.target.checked;
-			this.setState({ channels: this.state.channels });
+	        this.requestData(notification.data.id);
+	    },
+	    onChange: function onChange(event) {
+	        var index = parseInt(event.target.value);
+	        this.state.channels[index].active = event.target.checked;
+	        this.setState({ channels: this.state.channels });
 
-			var selected = [];
-			for (var c in this.state.channels) {
-				if (this.state.channels[c].active) selected.push(parseInt(c));
-			}this.context.store.dispatch({ type: Actions.ACTIONS.CHANGE_DIMENSION,
-				data: { id: parseInt(this.state.image_id),
-					dim: 'c', value: selected } });
-		},
-		render: function render() {
-			if (this.state.channels === null) return React.createElement(
-				'div',
-				null,
-				'loading...'
-			);
+	        var selected = [];
+	        for (var c in this.state.channels) {
+	            if (this.state.channels[c].active) selected.push(parseInt(c));
+	        }this.context.store.dispatch({ type: Actions.ACTIONS.CHANGE_DIMENSION,
+	            data: { id: parseInt(this.state.image_id),
+	                dim: 'c', value: selected } });
+	    },
+	    render: function render() {
+	        if (this.state.channels === null) return React.createElement(
+	            'div',
+	            null,
+	            'loading...'
+	        );
 
-			return React.createElement(
-				'div',
-				null,
-				this.state.channels.map(function (chan, c) {
-					return React.createElement(
-						'label',
-						{ key: "channel_" + chan.label },
-						React.createElement('input', { type: 'checkbox', value: "" + c, checked: chan.active,
-							onChange: this.onChange }),
-						chan.label
-					);
-				}.bind(this))
-			);
-		}
+	        return React.createElement(
+	            'div',
+	            null,
+	            this.state.channels.map(function (chan, c) {
+	                return React.createElement(
+	                    'label',
+	                    { key: "channel_" + chan.label },
+	                    React.createElement('input', { type: 'checkbox', value: "" + c, checked: chan.active,
+	                        onChange: this.onChange }),
+	                    chan.label
+	                );
+	            }.bind(this))
+	        );
+	    }
 	});
 
 	module.exports = Component1;
@@ -21622,81 +21622,85 @@ var window = window || {}; window["example"] =
 	var Actions = __webpack_require__(186);
 
 	var Component2 = React.createClass({
-		displayName: 'Component2',
+	    displayName: 'Component2',
 
-		contextTypes: { store: React.PropTypes.object.isRequired },
-		getInitialState: function getInitialState() {
-			return {
-				image_id: parseInt(this.props.image_id),
-				dims: { t: 0, max_t: 0, z: 0, max_z: 0 }
-			};
-		},
-		componentDidMount: function componentDidMount() {
-			this.subscription = this.context.store.subscribe(this.performAction);
-			this.requestData(this.state.image_id);
-		},
-		componentWillUnmount: function componentWillUnmount() {
-			this.subscription();
-			this.serverRequest.abort();
-		},
-		requestData: function requestData(id) {
-			this.serverRequest = $.ajax.call(this, { url: "https://demo.openmicroscopy.org/webgateway/imgData/" + id + "/",
-				dataType: "jsonp",
-				success: function (data, what, whatElse) {
-					this.state.dims.max_t = data.size.t;
-					this.state.dims.t = 0;
-					this.state.dims.max_z = data.size.z;
-					this.state.dims.z = 0;
-					this.setState({ image_id: data.id, dims: this.state.dims });
-					this.dispatchDimensionChange(['t', 'z']);
-				}.bind(this)
-			});
-		},
-		performAction: function performAction() {
-			var state = this.context.store.getState();
-			if (state.length === 0) return;
+	    contextTypes: { store: React.PropTypes.object.isRequired },
+	    getInitialState: function getInitialState() {
+	        return {
+	            image_id: parseInt(this.props.image_id),
+	            dims: { t: 0, max_t: 0, z: 0, max_z: 0 }
+	        };
+	    },
+	    componentDidMount: function componentDidMount() {
+	        this.subscription = this.context.store.subscribe(this.performAction);
+	        this.requestData(this.state.image_id);
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        this.subscription();
+	        this.serverRequest.abort();
+	    },
+	    requestData: function requestData(id) {
+	        this.serverRequest = $.ajax.call(this, { url: "https://demo.openmicroscopy.org/webgateway/imgData/" + id + "/",
+	            dataType: "jsonp",
+	            success: function (data, what, whatElse) {
+	                this.state.dims.max_t = data.size.t;
+	                this.state.dims.t = 0;
+	                this.state.dims.max_z = data.size.z;
+	                this.state.dims.z = 0;
+	                this.setState({ image_id: data.id, dims: this.state.dims });
+	                this.dispatchDimensionChange(['t', 'z']);
+	            }.bind(this) });
+	    },
+	    performAction: function performAction() {
+	        var state = this.context.store.getState();
+	        if (state.length === 0) return;
 
-			var notification = state[state.length - 1];
-			if (notification.action !== Actions.ACTIONS.CHANGE_IMAGE || notification.data.id === this.state.image_id) return;
+	        var notification = state[state.length - 1];
+	        if (notification.action !== Actions.ACTIONS.CHANGE_IMAGE || notification.data.id === this.state.image_id) return;
 
-			this.requestData(notification.data.id);
-		},
-		dispatchDimensionChange: function dispatchDimensionChange(dims) {
-			for (var d in dims) {
-				this.context.store.dispatch({ type: Actions.ACTIONS.CHANGE_DIMENSION,
-					data: { id: parseInt(this.state.image_id), dim: dims[d],
-						value: [this.state.dims[dims[d]]] } });
-			}
-		},
-		onChange: function onChange(event) {
-			var newVal = parseInt(event.target.value);
-			this.state.dims[event.target.id] = newVal;
-			this.setState({ dims: this.state.dims });
-			this.dispatchDimensionChange([event.target.id]);
-		},
-		render: function render() {
-			var size_t = null;
-			if (this.state.dims.max_t <= 1) size_t = React.createElement(
-				'div',
-				null,
-				this.state.dims.max_t === 0 ? "loading..." : ""
-			);else size_t = React.createElement('input', { type: 'range', id: 't', min: '0', max: this.state.dims.max_t - 1,
-				value: this.state.dims.t, onChange: this.onChange });
-			var size_z = null;
-			if (this.state.dims.max_z <= 1) size_z = React.createElement(
-				'div',
-				null,
-				this.state.dims.max_z === 0 ? "loading..." : ""
-			);else size_z = React.createElement('input', { type: 'range', id: 'z', min: '0', max: this.state.dims.max_z - 1,
-				value: this.state.dims.z, onChange: this.onChange });
+	        this.requestData(notification.data.id);
+	    },
+	    dispatchDimensionChange: function dispatchDimensionChange(dims) {
+	        for (var d in dims) {
+	            this.context.store.dispatch({ type: Actions.ACTIONS.CHANGE_DIMENSION,
+	                data: { id: parseInt(this.state.image_id), dim: dims[d],
+	                    value: [this.state.dims[dims[d]]] } });
+	        }
+	    },
+	    onChange: function onChange(event) {
+	        var newVal = parseInt(event.target.value);
+	        this.state.dims[event.target.id] = newVal;
+	        this.setState({ dims: this.state.dims });
+	        this.dispatchDimensionChange([event.target.id]);
+	    },
+	    render: function render() {
+	        var size_t = null;
+	        if (this.state.dims.max_t <= 1) size_t = React.createElement(
+	            'div',
+	            null,
+	            this.state.dims.max_t === 0 ? "loading..." : ""
+	        );else {
+	            size_t = React.createElement('input', { type: 'range', id: 't', min: '0', max: this.state.dims.max_t - 1,
+	                value: this.state.dims.t, onChange: this.onChange });
+	        }
 
-			return React.createElement(
-				'div',
-				null,
-				size_t,
-				size_z
-			);
-		}
+	        var size_z = null;
+	        if (this.state.dims.max_z <= 1) size_z = React.createElement(
+	            'div',
+	            null,
+	            this.state.dims.max_z === 0 ? "loading..." : ""
+	        );else {
+	            size_z = React.createElement('input', { type: 'range', id: 'z', min: '0', max: this.state.dims.max_z - 1,
+	                value: this.state.dims.z, onChange: this.onChange });
+	        }
+
+	        return React.createElement(
+	            'div',
+	            null,
+	            size_t,
+	            size_z
+	        );
+	    }
 	});
 
 	module.exports = Component2;
@@ -21713,40 +21717,40 @@ var window = window || {}; window["example"] =
 	var Actions = __webpack_require__(186);
 
 	var WrappedViewer = React.createClass({
-		displayName: 'WrappedViewer',
+	    displayName: 'WrappedViewer',
 
-		contextTypes: { store: React.PropTypes.object.isRequired },
-		componentDidMount: function componentDidMount() {
-			this.viewerInstance = new ol3viewer.Viewer(this.props.image_id, { server: "https://demo.openmicroscopy.org" });
-			this.subscription = this.context.store.subscribe(this.performAction);
-		},
-		render: function render() {
-			return React.createElement('div', { id: 'ome_viewer' });
-		},
-		shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-			return false; // we are not part of the virtual dom: leave us alone
-		},
-		componentWillUnmount: function componentWillUnmount() {
-			this.subscription();
-			this.viewerInstance.destroyViewer();
-			this.viewerInstance = null;
-		},
-		performAction: function performAction() {
-			var state = this.context.store.getState();
-			if (state.length === 0) return;
+	    contextTypes: { store: React.PropTypes.object.isRequired },
+	    componentDidMount: function componentDidMount() {
+	        this.viewerInstance = new ol3viewer.Viewer(this.props.image_id, { server: "https://demo.openmicroscopy.org" });
+	        this.subscription = this.context.store.subscribe(this.performAction);
+	    },
+	    render: function render() {
+	        return React.createElement('div', { id: 'ome_viewer' });
+	    },
+	    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+	        return false; // we are not part of the virtual dom: leave us alone
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        this.subscription();
+	        this.viewerInstance.destroyViewer();
+	        this.viewerInstance = null;
+	    },
+	    performAction: function performAction() {
+	        var state = this.context.store.getState();
+	        if (state.length === 0) return;
 
-			var notification = state[state.length - 1];
-			switch (notification.action) {
-				case Actions.ACTIONS.CHANGE_IMAGE:
-					if (notification.data.id !== this.viewerInstance.getId()) this.viewerInstance.changeToImage(notification.data.id);
-					break;
-				case Actions.ACTIONS.CHANGE_DIMENSION:
-					if (notification.data.id !== this.viewerInstance.getId()) return;
+	        var notification = state[state.length - 1];
+	        switch (notification.action) {
+	            case Actions.ACTIONS.CHANGE_IMAGE:
+	                if (notification.data.id !== this.viewerInstance.getId()) this.viewerInstance.changeToImage(notification.data.id);
+	                break;
+	            case Actions.ACTIONS.CHANGE_DIMENSION:
+	                if (notification.data.id !== this.viewerInstance.getId()) return;
 
-					this.viewerInstance.setDimensionIndex.apply(this.viewerInstance, [notification.data.dim].concat(notification.data.value));
-					break;
-			}
-		}
+	                this.viewerInstance.setDimensionIndex.apply(this.viewerInstance, [notification.data.dim].concat(notification.data.value));
+	                break;
+	        }
+	    }
 	});
 
 	module.exports = WrappedViewer;

@@ -8,10 +8,10 @@ module.exports = {
         libraryTarget : "var",
         target : "web"
     },
-    externals : {
+    externals: {
         "ol3viewer" : "ome.ol3"
     },
-    module : {
+    module: {
         loaders : [ {
             test : /\.js$/,
             loader : 'babel-loader',
