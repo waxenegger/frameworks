@@ -1,5 +1,6 @@
 node_modules
 eventbus/example/js
+design/example/js
 reactjs/example/js
 .project
 .settings
