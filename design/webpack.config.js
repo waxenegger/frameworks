@@ -9,7 +9,8 @@ module.exports = {
         target : "web"
     },
     externals: {
-        "ol3viewer" : "ome.ol3"
+        "ol3viewer" : "ome.ol3",
+        "jquery" : "jQuery"
     },
     module: {
         loaders: [{

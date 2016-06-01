@@ -1,59 +1,36 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var _ = require('underscore');
 
 var EVENTS = require('./events.js');
 
 var Component1 = React.createClass({
-    getInitialState: function() {
-        return {
-            image_id : parseInt(this.props.initial_image_id),
-            channels : null
-        };
-    },
-    requestData : function() {
-        this.serverRequest =
-            $.ajax.call(this,
-                 {url : "https://demo.openmicroscopy.org/webgateway/imgData/" +
-                 this.state.image_id + "/",
-                 dataType : "jsonp",
-                 success: function(data, what, whatElse) {
-                 this.setState(
-                 { image_id : data.id, channels : data.channels});}.bind(this)});
-    },
     componentDidMount: function() {
-        this.requestData();
-        this.props.eventbus.subscribe(
+        this.props.config.get("eventbus").subscribe(
                 EVENTS.IMAGE_CHANGE,
                 function(data, uid, time) {
-                    this.state.image_id = data['id'];
-                    this.requestData();
+                    this.forceUpdate();
                 }, this);
     },
     componentWillUnmount: function() {
-        this.serverRequest.abort();
-        this.props.eventbus.unsubscribe(this, EVENTS.IMAGE_CHANGE.event);
+        this.props.config.get("eventbus").unsubscribe(
+            this, EVENTS.IMAGE_CHANGE.event);
     },
     onChange: function(event) {
+        if (this.props.config.get("channels") === null) return;
         var index = parseInt(event.target.value);
-        this.state.channels[index].active = event.target.checked;
-        this.setState({channels : this.state.channels});
-
-        var selected = [];
-        for (var c in this.state.channels)
-            if (this.state.channels[c].active)
-                selected.push(parseInt(c));
-
-        this.props.eventbus.publish(
-                EVENTS.IMAGE_DIMENSION_CHANGE,
-                { id: parseInt(this.state.image_id),
-                    dim: 'c', value: selected});
+        var channels = [].concat(this.props.config.get("channels"));
+        channels[index] = _.clone(channels[index]);
+        channels[index].active = event.target.checked;
+        this.props.config.set("channels", channels);
+        this.forceUpdate();
     },
     render: function() {
-        if (this.state.channels === null) return(<div>loading...</div>);
+        if (this.props.config.get("channels") === null) return (<div></div>);
 
         return (
                 <div>{
-                    this.state.channels.map(function(chan, c) {
+                    this.props.config.get("channels").map(function(chan, c) {
                         return (
                                 <label key={"channel_" + chan.label}>
                                 <input type="checkbox" value={"" + c} checked={ chan.active }
