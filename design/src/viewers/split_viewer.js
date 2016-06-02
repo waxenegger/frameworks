@@ -1,6 +1,9 @@
+// JUST A PROOF OF CONCEPT FOR VIEWER/WIDGET EXCHANGE
+// not a real viewer, just a changing image tag...
+
 var React = require('react');
 
-var EVENTS = require('./events.js');
+var EVENTS = require('../events/events.js');
 
 var Viewer = React.createClass({
     getInitialState: function() {
@@ -9,17 +12,7 @@ var Viewer = React.createClass({
         };
     },
     componentDidMount: function() {
-        this.props.config.get("eventbus").subscribe(
-                EVENTS.IMAGE_CHANGE,
-                function(data, uid, time) {
-                    this.setUrl(true);
-                }, this);
-        this.props.config.get("eventbus").subscribe(
-                EVENTS.IMAGE_DIMENSION_CHANGE,
-                function(data, uid, time) {
-                    this.setUrl();
-                }, this);
-
+        this.subscribe();
         this.setUrl();
     },
     render: function() {
@@ -29,7 +22,7 @@ var Viewer = React.createClass({
     },
     setUrl : function() {
         if (!this.isMounted()) return;
-        
+
         var server = (this.props.config.get("server") ?
          this.props.config.get("server") : "");
         var image_id = this.props.config.get("image_id");
@@ -49,9 +42,18 @@ var Viewer = React.createClass({
         });
     },
     componentWillUnmount: function(){
-        this.props.config.get("eventbus").unsubscribe(
-            this, EVENTS.IMAGE_CHANGE.event);
+        this.props.config.off(null, null, this);
     },
+    subscribe : function() {
+        // listening to the following changes
+        this.props.config.on(
+            EVENTS.IMAGE_CHANGE + " " +
+            EVENTS.IMAGE_CHANNELS_CHANGE + " " +
+            EVENTS.IMAGE_DIMENSIONS_CHANGE,
+            function(model, value, options) {
+                this.setUrl();
+            }, this);
+    }
 });
 
 module.exports = Viewer;

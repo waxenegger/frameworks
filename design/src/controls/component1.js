@@ -2,19 +2,19 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var _ = require('underscore');
 
-var EVENTS = require('./events.js');
+var EVENTS = require('../events/events.js');
 
 var Component1 = React.createClass({
     componentDidMount: function() {
-        this.props.config.get("eventbus").subscribe(
-                EVENTS.IMAGE_CHANGE,
-                function(data, uid, time) {
-                    this.forceUpdate();
-                }, this);
+        // image change
+        this.props.config.on(EVENTS.IMAGE_CHANGE + " " + EVENTS.FORCE_UPDATE,
+            function(model, value, options) {
+                if (!this.isMounted()) return;
+                this.forceUpdate();
+            }, this);
     },
     componentWillUnmount: function() {
-        this.props.config.get("eventbus").unsubscribe(
-            this, EVENTS.IMAGE_CHANGE.event);
+        this.props.config.off(null,null, this);
     },
     onChange: function(event) {
         if (this.props.config.get("channels") === null) return;

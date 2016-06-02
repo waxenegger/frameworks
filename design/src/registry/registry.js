@@ -1,7 +1,8 @@
 /* react imports */
 var React = require('react');
 var ReactDOM = require('react-dom');
-var Header = require('./header.js')
+
+var Header = require('../controls/header.js')
 
 var Registry = {};
 
@@ -15,20 +16,20 @@ Registry.COMPONENTS = {
     },
     "viewer" : { // possible viewer components
         list : {
-            default : require('./ol3_viewer.js'),
-            split : require('./split_viewer.js')
+            default : require('../viewers/ol3_viewer.js'),
+            split : require('../viewers/split_viewer.js')
         },
         dom : "viewer"
     },
     "channels" :  { // channel changing components
         list : {
-            default : require('./component1.js')
+            default : require('../controls/component1.js')
         },
         dom : "channels"
     },
     "dimensions" : { // dimensions changing components
         list : {
-            default : require('./component2.js')
+            default : require('../controls/component2.js')
         },
         dom : "dimensions"
     }
