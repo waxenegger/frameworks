@@ -15,17 +15,19 @@ var Viewer = React.createClass({
             this.props.config.get("image_id"), params);
         this.viewerInstance.hide();
 
-        if (this.props.config.get("channels") &&
-                this.props.config.get("dimensions")) {
-            setTimeout(function() {
+        setTimeout(function() {
+            if (this.props.config.get("channels") &&
+                    this.props.config.get("dimensions")) {
                 this.updateChannels(this.props.config.get("channels"));
                 this.updateDimensions(
                     this.props.config,
                     this.props.config.get("dimensions"), true);
-                this.updateRegionsVisibility(this.props.config.get("show_regions"));
-                this.viewerInstance.show();
-                }.bind(this),700);
-        } else this.viewerInstance.show();
+            }
+            this.viewerInstance.show();
+            this.updateRegionsVisibility(this.props.config.get("show_regions"));
+            this.viewerInstance.addControl("rotate");
+            this.viewerInstance.addControl("fullscreen");
+        }.bind(this),700);
     },
     render: function() {
         return (<div id="ome_viewer"></div>);
@@ -90,8 +92,20 @@ var Viewer = React.createClass({
     },
     updateRegionsVisibility : function(value) {
         if (!this.isMounted() || this.viewerInstance === null) return;
-        if (value) this.viewerInstance.addRegions();
-        this.viewerInstance.setRegionsVisibility(value, []);
+
+        if (value) {
+            this.viewerInstance.addRegions();
+            this.viewerInstance.setRegionsVisibility(true, []);
+            this.viewerInstance.enableRegionsContextMenu(true);
+            this.viewerInstance.setRegionsModes(
+                [ome.ol3.REGIONS_MODE.TRANSLATE,
+                ome.ol3.REGIONS_MODE.MODIFY]);
+        } else {
+            this.viewerInstance.enableRegionsContextMenu(false);
+            this.viewerInstance.setRegionsModes(
+            [ome.ol3.REGIONS_MODE.DEFAULT]);
+            this.viewerInstance.setRegionsVisibility(false, []);
+        }
     }
 });
 
