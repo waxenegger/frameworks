@@ -24,10 +24,10 @@ var Viewer = React.createClass({
                     this.props.config.get("dimensions"), true);
             }
             this.viewerInstance.show();
-            this.updateRegionsVisibility(this.props.config.get("show_regions"));
             this.viewerInstance.addControl("rotate");
             this.viewerInstance.addControl("fullscreen");
-        }.bind(this),700);
+            this.updateRegionsVisibility(this.props.config.get("show_regions"));
+        }.bind(this),1000);
     },
     render: function() {
         return (<div id="ome_viewer"></div>);
