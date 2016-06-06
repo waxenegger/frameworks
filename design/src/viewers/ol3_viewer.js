@@ -39,10 +39,10 @@ var Viewer = React.createClass({
     },
     subscribe : function() {
         // image change
-        this.props.config.on(EVENTS.IMAGE_CHANGE,
+        this.props.config.on(EVENTS.FORCE_UPDATE,
             function(model, value, options) {
                 if (!this.isMounted() || this.viewerInstance === null) return;
-                this.viewerInstance.changeToImage(parseInt(value));
+                this.viewerInstance.changeToImage(this.props.config.get("image_id"));
             }, this);
         // channel change
         this.props.config.on(EVENTS.IMAGE_CHANNELS_CHANGE,

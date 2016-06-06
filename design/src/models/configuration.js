@@ -25,6 +25,8 @@ var Configuration = Backbone.Model.extend({
                this.get("image_id") + "/",
             dataType : "jsonp",
             success : function() {
+                this.set("default_view", "normal_view");
+                this.set("show_regions", false);
                 this.trigger(EVENTS.FORCE_UPDATE);
             }.bind(this)
         });
@@ -48,6 +50,8 @@ var Configuration = Backbone.Model.extend({
                  this.get("image_id") + "/",
               dataType : "jsonp",
               success : function() {
+                  this.set("default_view", "normal_view");
+                  this.set("show_regions", false);
                   this.trigger(EVENTS.FORCE_UPDATE);
               }.bind(this)
       });

@@ -5,13 +5,6 @@ var EVENTS = require('../events/events.js');
 
 var Header = React.createClass({
     componentDidMount: function() {
-        // image change
-        this.props.config.on(EVENTS.IMAGE_CHANGE,
-            function(model, value, options) {
-                if (!this.isMounted()) return;
-                this.props.config.set("show_regions", false);
-                this.switchToView("normal_view");
-            }, this);
         // update change
         this.props.config.on(EVENTS.FORCE_UPDATE,
             function(model, value, options) {

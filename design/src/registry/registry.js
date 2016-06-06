@@ -27,11 +27,13 @@ Registry.COMPONENTS = {
         },
         dom : "channels"
     },
-    "dimensions" : { // dimensions changing components
-        list : {
-            default : require('../controls/component2.js')
-        },
-        dom : "dimensions"
+    "plane" : { // plane
+        list : { default : require('../controls/plane_slider.js')},
+        dom : "plane"
+    },
+    "time" : { // time
+        list : { default : require('../controls/time_slider.js')},
+        dom : "time"
     }
 };
 
