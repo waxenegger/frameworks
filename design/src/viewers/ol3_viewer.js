@@ -24,8 +24,6 @@ var Viewer = React.createClass({
                     this.props.config.get("dimensions"), true);
             }
             this.viewerInstance.show();
-            this.viewerInstance.addControl("rotate");
-            this.viewerInstance.addControl("fullscreen");
             this.updateRegionsVisibility(this.props.config.get("show_regions"));
         }.bind(this),1000);
     },
