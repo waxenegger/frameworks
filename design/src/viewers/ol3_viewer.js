@@ -1,6 +1,6 @@
 var React = require('react');
 
-var ol3viewer = require('ol3viewer');
+var ol3viewer = require('../../libs/ome-viewer-1.0.js').ol3;
 var EVENTS = require('../events/events.js');
 
 var Viewer = React.createClass({
@@ -96,12 +96,12 @@ var Viewer = React.createClass({
             this.viewerInstance.setRegionsVisibility(true, []);
             this.viewerInstance.enableRegionsContextMenu(true);
             this.viewerInstance.setRegionsModes(
-                [ome.ol3.REGIONS_MODE.TRANSLATE,
-                ome.ol3.REGIONS_MODE.MODIFY]);
+                [ol3viewer.REGIONS_MODE.TRANSLATE,
+                ol3viewer.REGIONS_MODE.MODIFY]);
         } else {
             this.viewerInstance.enableRegionsContextMenu(false);
             this.viewerInstance.setRegionsModes(
-            [ome.ol3.REGIONS_MODE.DEFAULT]);
+            [ol3viewer.REGIONS_MODE.DEFAULT]);
             this.viewerInstance.setRegionsVisibility(false, []);
         }
     }

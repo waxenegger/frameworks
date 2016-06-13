@@ -9,7 +9,6 @@ module.exports = {
         target : "web"
     },
     externals: {
-        "ol3viewer" : "ome.ol3",
         "jquery" : "jQuery"
     },
     module: {
@@ -17,6 +16,7 @@ module.exports = {
               test: /\.js$/,
               loader: 'babel-loader',
               query: {
+                  compact: false,
                   presets: ['es2015', 'react']
               }
         }]
