@@ -27,7 +27,7 @@ module.exports = {
       filename: 'index.html'
     }),
     new ProvidePlugin({
-      Promise: 'bluebird',
+      //Promise: 'bluebird',
       $: 'jquery',
       jQuery: 'jquery',
       'window.jQuery': 'jquery' // this doesn't expose jQuery property for window, but expose it to every module
@@ -40,7 +40,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.js$/, loader: 'babel', exclude: /node_modules/, query: { presets: ['es2015-loose', 'stage-1'], plugins: ['transform-decorators-legacy'] } },
+      { test: /\.js$/, loader: 'babel', exclude: /node_modules/, query: { compact: false, presets: ['es2015-loose', 'stage-1'], plugins: ['transform-decorators-legacy'] } },
       { test: /\.css?$/, loader: 'style!css' },
       { test: /\.html$/, loader: 'html' },
       { test: /\.(png|gif|jpg)$/, loader: 'url?limit=8192' },
