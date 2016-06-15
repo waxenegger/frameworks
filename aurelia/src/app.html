@@ -1,7 +1,20 @@
 <template>
-  <nav-bar router.bind="router"></nav-bar>
-
-  <div class="page-host">
-    <router-view></router-view>
+  <div id="header" class="block100 height5 block">
+      <div class="block20 block">&nbsp;</div>
+      <input type="text" id="image_id" value="" class="block10 block" />
+      <input type="button" id="image_change" value="Change Image" class="block10 block" />
+      <div class="block10 block">&nbsp;</div>
+      <label class="block10 block">
+          <input id="show_regions" type="checkbox" />
+          Show Regions
+      </label>
+      <div class="block40 block">&nbsp;</div>
+  </div>
+  <div class="block100 height95">
+    <custom-dimension-slider id="plane" class="block5 height95 block"></custom-dimension-slider>
+    <custom-viewer class="block95 height95 block"></custom-viewer>
+    <div class="block5 height5 block"></div>
+    <custom-dimension-slider id="time" class="block95 height5 block"></custom-dimension-slider>
+    <!--router-view></router-view-->
   </div>
 </template>

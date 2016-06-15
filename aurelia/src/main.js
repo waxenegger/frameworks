@@ -10,15 +10,16 @@ import Configuration from './configuration.js';
 bootstrap(function(aurelia) {
   aurelia.use
     .standardConfiguration()
-    .developmentLogging();
+    .developmentLogging()
+    .globalResources('custom-viewer.js')
+    .globalResources('custom-dimension-slider.js');
+    //.globalResources('custom-time-slider.js');
 
-    // test singleton registration
     aurelia.container.registerInstance(Configuration,
-        new Configuration("https://demo.openmicroscopy.org"));
-
-    // test event bus
-    let eventbus = aurelia.container.get(EventAggregator);
-    eventbus.subscribe("lala", (what) => console.info(what));
+        new Configuration(
+            aurelia.container.get(EventAggregator),
+            "https://demo.openmicroscopy.org",
+             205740));
 
     aurelia.start().then(() => aurelia.setRoot('app', document.body));
 });
