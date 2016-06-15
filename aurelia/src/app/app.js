@@ -1,9 +1,9 @@
-import '../styles/pocketgrid.css';
-import '../styles/design.css';
+require('../css/pocketgrid.css');
+require('../css/design.css');
 
 import {inject} from 'aurelia-framework';
-import Configuration from './configuration.js';
-import {EVENTS} from './events.js';
+import Configuration from '../configuration/configuration';
+import {EVENTS} from '../events/events';
 import {EventAggregator} from 'aurelia-event-aggregator';
 
 @inject(Configuration, EventAggregator)

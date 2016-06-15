@@ -1,31 +1,13 @@
 {
-  "name": "aurelia-skeleton-navigation-webpack",
-  "version": "1.0.0-beta.1.2.6",
-  "description": "A starter kit for building a standard navigation-style app with Aurelia and webpack.",
-  "main": "index.js",
+  "version": "1.0.0",
+  "description": "Aurelia Example",
   "scripts": {
     "dev": "webpack-dev-server --config webpack.config.js --hot --inline --progress --devtool eval",
     "build": "webpack --config webpack.config.js --progress --profile",
-    "prod": "webpack -p --config webpack.prod.config.js --progress --devtool source-map",
+    "prod": "webpack -p --config webpack.prod.config.js --progress",
     "webdriver:update": "./node_modules/.bin/webdriver-manager update",
     "webdriver:start": "./node_modules/.bin/webdriver-manager start"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/aurelia/skeleton-navigation.git"
-  },
-  "keywords": [
-    "aurelia",
-    "skeleton",
-    "navigation",
-    "webpack"
-  ],
-  "author": "Martijn Boland",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/aurelia/skeleton-navigation/issues"
-  },
-  "homepage": "https://github.com/aurelia/skeleton-navigation#readme",
   "dependencies": {
     "aurelia-bootstrapper-webpack": "^1.0.0-beta.1.0.0",
     "aurelia-event-aggregator": "^1.0.0-beta.1.1.1",

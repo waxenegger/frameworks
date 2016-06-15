@@ -1,6 +1,6 @@
 import {Container} from 'aurelia-dependency-injection';
 import {BindingEngine, noView} from 'aurelia-framework';
-import {EVENTS} from './events.js';
+import {EVENTS} from '../events/events.js';
 
 @noView
 export default class Configuration {

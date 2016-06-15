@@ -5,15 +5,14 @@ import { bootstrap } from 'aurelia-bootstrapper-webpack';
 import 'bootstrap';
 
 import {EventAggregator} from 'aurelia-event-aggregator';
-import Configuration from './configuration.js';
+import Configuration from './configuration/configuration.js';
 
 bootstrap(function(aurelia) {
   aurelia.use
     .standardConfiguration()
     .developmentLogging()
-    .globalResources('custom-viewer.js')
-    .globalResources('custom-dimension-slider.js');
-    //.globalResources('custom-time-slider.js');
+    .globalResources('viewers/custom-viewer')
+    .globalResources('controls/custom-dimension-slider');
 
     aurelia.container.registerInstance(Configuration,
         new Configuration(
@@ -21,5 +20,5 @@ bootstrap(function(aurelia) {
             "https://demo.openmicroscopy.org",
              205740));
 
-    aurelia.start().then(() => aurelia.setRoot('app', document.body));
+    aurelia.start().then(() => aurelia.setRoot('app/app', document.body));
 });

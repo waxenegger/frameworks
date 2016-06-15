@@ -1,11 +1,11 @@
 import {inject} from 'aurelia-framework';
-import Configuration from './configuration.js';
-import {EVENTS} from './events.js';
+import Configuration from '../configuration/configuration.js';
+import {EVENTS} from '../events/events.js';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {customElement} from 'aurelia-framework';
 
-import '../styles/viewer.css';
-import {ol3} from '../libs/ome-viewer-1.0.js';
+require('../css/viewer.css');
+import {ol3} from '../../libs/ome-viewer-1.0.js';
 
 @customElement('custom-viewer')
 @inject(Configuration, EventAggregator)

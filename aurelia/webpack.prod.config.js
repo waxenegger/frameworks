@@ -1,36 +1,56 @@
-/*eslint-disable no-var*/
-
 var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var AureliaWebpackPlugin = require('aurelia-webpack-plugin');
 var ProvidePlugin = require('webpack/lib/ProvidePlugin');
+var UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin');
 var pkg = require('./package.json');
+//var outputFileTemplateSuffix = '-' + pkg.version;
 
-var outputFileTemplateSuffix = '-' + pkg.version;
+var fs = require('fs');
+var deleteFolderRecursive = function(path) {
+  if( fs.existsSync(path) ) {
+    fs.readdirSync(path).forEach(function(file,index){
+      var curPath = path + "/" + file;
+      if(fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
+deleteFolderRecursive('./build')
+deleteFolderRecursive('./example')
 
 module.exports = {
   entry: {
     main: [
-      './src/main'
+      './src/main.js'
     ]
   },
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: '[name]' + outputFileTemplateSuffix + '.js',
-    chunkFilename: '[id]' + outputFileTemplateSuffix + '.js'
+    path: path.join(__dirname, 'example'),
+    filename: 'bundle' + pkg.version + '.js'
+    //filename: '[name]' + outputFileTemplateSuffix + '.js',
+    //chunkFilename: '[id]' + outputFileTemplateSuffix + '.js'
   },
   plugins: [
     new AureliaWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: 'Aurelia webpack skeleton - ' + pkg.version,
-      template: 'index.prod.html',
+      template : './src/index.html',
       filename: 'index.html'
-    }),
+  }),
     new ProvidePlugin({
       //Promise: 'bluebird',
       $: 'jquery',
       jQuery: 'jquery',
       'window.jQuery': 'jquery' // this doesn't expose jQuery property for window, but expose it to every module
+  }),
+    new UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
     })
   ],
   resolve: {
@@ -40,13 +60,10 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.js$/, loader: 'babel', exclude: /node_modules/, query: { compact: false, presets: ['es2015-loose', 'stage-1'], plugins: ['transform-decorators-legacy'] } },
-      { test: /\.css?$/, loader: 'style!css' },
-      { test: /\.html$/, loader: 'html' },
-      { test: /\.(png|gif|jpg)$/, loader: 'url?limit=8192' },
-      { test: /\.woff2(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&mimetype=application/font-woff2' },
-      { test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&mimetype=application/font-woff' },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file' }
+      { test: /\.js$/, loader: 'babel', exclude: /node_modules/,
+        query: { compact: false, presets: ['es2015-loose', 'stage-1'], plugins: ['transform-decorators-legacy'] } },
+      { test: /\.css?$/, loader: 'file?name=css/[name].[ext]' },
+      { test: /\.html$/, loader: 'html' }
     ]
   }
 };

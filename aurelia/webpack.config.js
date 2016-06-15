@@ -1,8 +1,24 @@
-/*eslint-disable no-var*/
-
 var path = require('path');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 var AureliaWebpackPlugin = require('aurelia-webpack-plugin');
 var ProvidePlugin = require('webpack/lib/ProvidePlugin');
+
+var fs = require('fs');
+var deleteFolderRecursive = function(path) {
+  if( fs.existsSync(path) ) {
+    fs.readdirSync(path).forEach(function(file,index){
+      var curPath = path + "/" + file;
+      if(fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
+deleteFolderRecursive('./build')
+deleteFolderRecursive('./export')
 
 module.exports = {
   devServer: {
@@ -11,7 +27,7 @@ module.exports = {
   },
   entry: {
     main: [
-      './src/main'
+      './src/main.js'
     ]
   },
   output: {
@@ -20,6 +36,10 @@ module.exports = {
   },
   plugins: [
     new AureliaWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template : './src/index-dev.html',
+      filename: 'index.html'
+  }),
     new ProvidePlugin({
       //Promise: 'bluebird',
       $: 'jquery',
@@ -30,7 +50,7 @@ module.exports = {
   module: {
     loaders: [
       { test: /\.js$/, loader: 'babel', exclude: /node_modules/, query: { compact: false, presets: ['es2015-loose', 'stage-1'], plugins: ['transform-decorators-legacy'] } },
-      { test: /\.css?$/, loader: 'style!css' },
+      { test: /\.css?$/, loader: 'style!raw!' },
       { test: /\.html$/, loader: 'html' },
       { test: /\.(png|gif|jpg)$/, loader: 'url?limit=8192' },
       { test: /\.woff2(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url?limit=10000&mimetype=application/font-woff2' },
