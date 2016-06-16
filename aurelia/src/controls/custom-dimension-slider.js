@@ -10,7 +10,8 @@ import {slider} from 'jquery-ui';
 export default class CustomDimensionSlider {
     subscriptions = [];
     sub_list = [
-        [EVENTS.FORCE_UPDATE, (image_id) => this.forceUpdate(image_id)]
+        [EVENTS.FORCE_UPDATE, (image_id) => this.forceUpdate(image_id)],
+        [EVENTS.FORCE_CLEAR, () => this.detached()]
     ];
     constructor(config, eventbus, element) {
         this.config = config;
@@ -25,16 +26,13 @@ export default class CustomDimensionSlider {
 
     attached() {
         $(this.elSelector).addClass(this.dim === 'z' ? "height100" : "");
-        $(this.elSelector).hide();
-        $(this.elSelector).slider({
-            orientation: this.dim === 'z' ? "vertical" : "horizontal",
-            min: 0, max: 1, step: 1, value: 0,
-            change: (event, ui) => this.onChange(ui.value)
-        });
     }
 
     detached() {
-        $(this.elSelector).slider( "destroy" );
+        try {
+            $(this.elSelector).slider( "destroy" );
+        } catch (ignored) {}
+        $(this.elSelector).hide();
     }
 
     subscribeToEvents() {
@@ -61,13 +59,15 @@ export default class CustomDimensionSlider {
     }
 
     forceUpdate() {
-        $(this.elSelector).slider(
-            "option", "value", this.config.dimensions[this.dim]);
-        $(this.elSelector).slider(
-            "option", "max", this.config.dimensions['max_' + this.dim]-1);
-        if (this.config.dimensions[this.dim] === 1)
-            $(this.elSelector).slider("option", "disabled", true);
-        else $(this.elSelector).slider("option", "disabled", false);
+        this.detached();
+        if (this.config.dimensions['max_' + this.dim] <= 1) return;
+
+        $(this.elSelector).slider({
+            orientation: this.dim === 'z' ? "vertical" : "horizontal",
+            min: 0, max: this.config.dimensions['max_' + this.dim],
+            step: 1, value: this.config.dimensions[this.dim],
+            change: (event, ui) => this.onChange(ui.value)
+        });
         $(this.elSelector).show();
     }
 

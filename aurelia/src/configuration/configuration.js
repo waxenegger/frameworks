@@ -15,6 +15,7 @@ export default class Configuration {
         this.binding = new Container().get(BindingEngine);
         this.server = server;
         this.image_id = initial_image_id;
+        this.dataset_id = null;
         this.imageIdObserver = null;
 
         this.requestData();
@@ -35,19 +36,29 @@ export default class Configuration {
             subscribe(() => this.requestData(true));
     }
 
-    requestData(forceUpdate = true) {
+    requestData() {
         this.eventbus.publish(EVENTS.IMAGE_CHANGE, this.image_id);
-        var url = this.server + "/webgateway/imgData/" + this.image_id;
+        var url = this.server + "/webgateway/imgData/" + this.image_id + '/';
         $.ajax(
             {url : url,
             dataType : "jsonp",
             success : (response) => {
+                if (typeof response.meta === 'object' &&
+                        typeof response.meta.datasetId === 'number')
+                    this.dataset_id = response.meta.datasetId;
                 this.channels = response.channels;
                 this.dimensions = {
                     t: 0, max_t : response.size.t,
                     z: 0, max_z : response.size.z
                 };
-                if (forceUpdate) this.eventbus.publish(EVENTS.FORCE_UPDATE, this.image_id);
+                this.show_regions = false;
+                this.eventbus.publish(EVENTS.FORCE_UPDATE, this.image_id);
+                if (this.dataset_id)
+                    this.eventbus.publish(EVENTS.INIT_THUMBSLIDER, this.dataset_id);
+            },
+            error : (error) => {
+                this.show_regions = false;
+                this.eventbus.publish(EVENTS.FORCE_CLEAR);
             }
         });
     }

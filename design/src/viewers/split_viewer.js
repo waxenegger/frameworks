@@ -47,7 +47,7 @@ var Viewer = React.createClass({
     subscribe : function() {
         // listening to the following changes
         this.props.config.on(
-            EVENTS.IMAGE_CHANGE + " " +
+            EVENTS.FORCE_UPDATE + " " +
             EVENTS.IMAGE_CHANNELS_CHANGE + " " +
             EVENTS.IMAGE_DIMENSIONS_CHANGE,
             function(model, value, options) {

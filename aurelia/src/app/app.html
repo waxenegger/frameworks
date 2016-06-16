@@ -2,16 +2,25 @@
   <div id="header" class="block100 height5 block">
       <div class="block20 block">&nbsp;</div>
       <input type="text" id="image_id" value="" class="block10 block" />
-      <input type="button" id="image_change" value="Change Image" class="block10 block" />
+      <input type="button" click.delegate="onImageChange($event)"
+        value="Change Image" class="block10 block" />
       <div class="block10 block">&nbsp;</div>
       <label class="block20 block">
-          <input id="show_regions" type="checkbox" />
+          <input id="show_regions" type="checkbox"
+            checked.bind="config.show_regions" 
+            change.delegate="onRegionsShowChange($event)"/>
           Show Regions
       </label>
       <div class="block30 block">&nbsp;</div>
   </div>
-  <div class="block100 height95">
-    <custom-dimension-slider id="plane" class="block5 height95 block"></custom-dimension-slider>
+  <div id="left_panel"
+    class="${config.dataset_id ? 'block10' : 'block0'} height95 block">
+      <thumb-slider class="block100 height100 block"></thumb-slider>
+  </div>
+  <div id="center"
+    class="${config.dataset_id ? 'block90' : 'block100'} height95 block">
+    <custom-dimension-slider id="plane" class="block5 height95 block">
+    </custom-dimension-slider>
     <custom-viewer class="block95 height95 block"></custom-viewer>
     <div class="block5 height5 block"></div>
     <custom-dimension-slider id="time" class="block95 height5 block"></custom-dimension-slider>

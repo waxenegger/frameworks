@@ -1,6 +1,6 @@
 var React = require('react');
 var _ = require('underscore');
-var slider = require('jquery-ui/slider');
+require('jquery-ui/slider');
 var EVENTS = require('../events/events.js');
 
 var TimeSlider = React.createClass({

@@ -8,6 +8,8 @@ import {EventAggregator} from 'aurelia-event-aggregator';
 
 @inject(Configuration, EventAggregator)
 export class App {
+    showRegionsObserver = null;
+/*
   configureRouter(config, router) {
     config.title = 'Aurelia Example';
     config.map([
@@ -15,27 +17,21 @@ export class App {
     ]);
 
     this.router = router;
-  }
+}*/
 
   constructor(config, eventbus) {
       this.config = config;
       this.eventbus =  eventbus;
   }
 
-  attached() {
-      $("#image_change").on("click",
-        () => this.config.image_id = parseInt($("#image_id").val()));
-      $("#show_regions").on("change",
-        () => {
-            this.config.show_regions = $("#show_regions").prop("checked");
-            this.eventbus.publish(
-                EVENTS.REGIONS_VISIBILITY, this.config.show_regions);
-            })
+  onImageChange(event) {
+      let newId = parseInt($("#image_id").val());
+      if (!isNaN(newId)) this.config.image_id = newId;
   }
 
-  detached() {
-       $("#image_change").off("click");
-       $("#show_regions").off("change");
+  onRegionsShowChange(event) {
+      this.config.show_regions = $("#show_regions").prop("checked");
+      this.eventbus.publish(
+          EVENTS.REGIONS_VISIBILITY, this.config.show_regions);
   }
-
 }

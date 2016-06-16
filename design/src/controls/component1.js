@@ -1,5 +1,4 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 var _ = require('underscore');
 
 var EVENTS = require('../events/events.js');

@@ -8,6 +8,7 @@
 
 #right_panel {
     background-color: #C2CBCF;
+    display: none;
 }
 
 .height100 {
@@ -95,4 +96,8 @@
 
 .block5 {
     width: 5%;
+}
+
+.block0 {
+    width: 0%;
 }

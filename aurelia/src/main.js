@@ -1,5 +1,5 @@
 /*eslint-disable no-var,no-unused-vars*/
-//var Promise = require('bluebird'); // Promise polyfill for IE11
+var Promise = require('bluebird'); // Promise polyfill for IE11
 
 import { bootstrap } from 'aurelia-bootstrapper-webpack';
 import 'bootstrap';
@@ -12,7 +12,8 @@ bootstrap(function(aurelia) {
     .standardConfiguration()
     .developmentLogging()
     .globalResources('viewers/custom-viewer')
-    .globalResources('controls/custom-dimension-slider');
+    .globalResources('controls/custom-dimension-slider')
+    .globalResources('controls/thumb-slider');
 
     aurelia.container.registerInstance(Configuration,
         new Configuration(

@@ -1,8 +1,7 @@
-import {inject} from 'aurelia-framework';
 import Configuration from '../configuration/configuration.js';
 import {EVENTS} from '../events/events.js';
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {customElement} from 'aurelia-framework';
+import {inject, customElement} from 'aurelia-framework';
 
 require('../css/viewer.css');
 import {ol3} from '../../libs/ome-viewer-1.0.js';
@@ -10,10 +9,10 @@ import {ol3} from '../../libs/ome-viewer-1.0.js';
 @customElement('custom-viewer')
 @inject(Configuration, EventAggregator)
 export default class CustomViewer {
-    lastShowRegions = false;
     subscriptions = [];
     sub_list = [
-        [EVENTS.IMAGE_CHANGE, (imageid) => this.viewer.changeToImage(imageid)],
+        [EVENTS.IMAGE_CHANGE,
+            (imageid) => this.viewer.changeToImage(imageid)],
         [EVENTS.FORCE_UPDATE, () => this.forceUpdate()],
         [EVENTS.REGIONS_VISIBILITY, (flag) => this.updateRegionsVisibility(flag)],
         [EVENTS.DIMENSION_CHANGE, (data, event) =>
@@ -54,8 +53,7 @@ export default class CustomViewer {
             this.viewer.enableRegionsContextMenu(true);
         } else {
             this.viewer.enableRegionsContextMenu(false);
-            this.viewer.setRegionsModes(
-            [ol3.REGIONS_MODE.DEFAULT]);
+            this.viewer.setRegionsModes([ol3.REGIONS_MODE.DEFAULT]);
             this.viewer.setRegionsVisibility(false, []);
         }
     }
@@ -69,10 +67,7 @@ export default class CustomViewer {
     }
 
     forceUpdate()  {
-        if (this.config.show_regions != this.lastShowRegions) {
-            this.updateRegionsVisibility(this.config.show_regions);
-            this.lastShowRegions = this.config.show_regions;
-        }
+        this.updateRegionsVisibility(this.config.show_regions);
 
         var presentZ = this.viewer.getDimensionIndex('z');
         var presentT = this.viewer.getDimensionIndex('t');
