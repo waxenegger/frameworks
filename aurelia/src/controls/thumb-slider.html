@@ -1,12 +1,5 @@
 <template>
-  <div id="thumb-slider">
-      <ul style="list-style-type: none;">
-           <li repeat.for="image of data">
-             <div>
-               <img src="${config.server}${image.thumb_url}"
-                click.delegate="onClick(image.id)"/>
-             </div>
-           </li>
-         </ul>
+  <div id="thumb-slider" repeat.for="image of data" style="text-align: center">
+      <img src="${config.server}${image.thumb_url}"
   </div>
 </template>
