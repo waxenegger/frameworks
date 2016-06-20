@@ -8,7 +8,6 @@
 
 #right_panel {
     background-color: #C2CBCF;
-    display: none;
 }
 
 .height100 {
@@ -48,56 +47,70 @@
 
 .block100 {
     width: 100%;
+    display: block;
 }
 
 .block95 {
     width: 95%;
+    display: block;
 }
 
 .block90 {
     width: 90%;
+    display: block;
 }
 
 .block80 {
     width: 80%;
+    display: block;
 }
 
 .block70 {
     width: 70%;
+    display: block;
 }
 
 .block60 {
     width: 60%;
+    display: block;
 }
 
 .block50 {
     width: 50%;
+    display: block;
 }
 
 .block40 {
     width: 40%;
+    display: block;
 }
 
 .block30 {
     width: 30%;
+    display: block;
 }
 
 .block20 {
     width: 20%;
+    display: block;
 }
 
 .block15 {
     width: 15%;
+    display: block;
 }
 
 .block10 {
     width: 10%;
+    display: block;
 }
 
 .block5 {
     width: 5%;
+    display: block;
 }
 
 .block0 {
     width: 0%;
+    display: none;
 }

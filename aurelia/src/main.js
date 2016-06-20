@@ -5,7 +5,8 @@ import { bootstrap } from 'aurelia-bootstrapper-webpack';
 import 'bootstrap';
 
 import {EventAggregator} from 'aurelia-event-aggregator';
-import Configuration from './configuration/configuration.js';
+import ImageInfo from './model/image_info';
+import RegionsInfo from './model/regions_info';
 
 bootstrap(function(aurelia) {
   aurelia.use
@@ -13,13 +14,16 @@ bootstrap(function(aurelia) {
     .developmentLogging()
     .globalResources('viewers/custom-viewer')
     .globalResources('controls/custom-dimension-slider')
-    .globalResources('controls/thumb-slider');
+    .globalResources('controls/custom-thumb-slider')
+    .globalResources('regions/custom-regions-list');
 
-    aurelia.container.registerInstance(Configuration,
-        new Configuration(
+    let image_info =
+        new ImageInfo(
             aurelia.container.get(EventAggregator),
             "https://demo.openmicroscopy.org",
-             205740));
+             205740)
+    aurelia.container.registerInstance(ImageInfo, image_info);
+    aurelia.container.registerInstance(RegionsInfo, new RegionsInfo(image_info));
 
     aurelia.start().then(() => aurelia.setRoot('app/app', document.body));
 });

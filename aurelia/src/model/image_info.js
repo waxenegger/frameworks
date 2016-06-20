@@ -3,7 +3,7 @@ import {BindingEngine, noView} from 'aurelia-framework';
 import {EVENTS} from '../events/events.js';
 
 @noView
-export default class Configuration {
+export default class ImageInfo {
     // default configuration needed
     dimensions = {t: 0, max_t : 1,z: 0, max_z : 1};
     channels = null;

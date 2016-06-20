@@ -2,11 +2,11 @@ require('../css/pocketgrid.css');
 require('../css/design.css');
 
 import {inject} from 'aurelia-framework';
-import Configuration from '../configuration/configuration';
+import ImageInfo from '../model/image_info';
+import RegionsInfo from '../model/regions_info';
 import {EVENTS} from '../events/events';
-import {EventAggregator} from 'aurelia-event-aggregator';
 
-@inject(Configuration, EventAggregator)
+@inject(ImageInfo, RegionsInfo)
 export class App {
     showRegionsObserver = null;
 /*
@@ -19,19 +19,19 @@ export class App {
     this.router = router;
 }*/
 
-  constructor(config, eventbus) {
-      this.config = config;
-      this.eventbus =  eventbus;
+  constructor(image_info, regions_info) {
+      this.image_info = image_info;
+      this.regions_info = regions_info;
   }
 
   onImageChange(event) {
       let newId = parseInt($("#image_id").val());
-      if (!isNaN(newId)) this.config.image_id = newId;
+      if (!isNaN(newId)) this.image_info.image_id = newId;
   }
 
   onRegionsShowChange(event) {
-      this.config.show_regions = $("#show_regions").prop("checked");
-      this.eventbus.publish(
-          EVENTS.REGIONS_VISIBILITY, this.config.show_regions);
+      this.image_info.show_regions = $("#show_regions").prop("checked");
+      this.image_info.eventbus.publish(
+          EVENTS.SHOW_REGIONS, this.image_info.show_regions);
   }
 }

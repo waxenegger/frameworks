@@ -7,23 +7,27 @@
       <div class="block10 block">&nbsp;</div>
       <label class="block20 block">
           <input id="show_regions" type="checkbox"
-            checked.bind="config.show_regions" 
+            checked.bind="image_info.show_regions"
             change.delegate="onRegionsShowChange($event)"/>
           Show Regions
       </label>
       <div class="block30 block">&nbsp;</div>
   </div>
   <div id="left_panel"
-    class="${config.dataset_id ? 'block10' : 'block0'} height95 block">
+    class="${image_info.dataset_id ? 'block10' : 'block0'} height95 block">
       <thumb-slider class="block100 height100 block"></thumb-slider>
   </div>
   <div id="center"
-    class="${config.dataset_id ? 'block90' : 'block100'} height95 block">
+    class="${image_info.dataset_id ? 'block80' : 'block90'} height95 block">
     <custom-dimension-slider id="plane" class="block5 height95 block">
     </custom-dimension-slider>
     <custom-viewer class="block95 height95 block"></custom-viewer>
-    <div class="block5 height5 block"></div>
+    <div class="block5 height5 block">&nbsp;</div>
     <custom-dimension-slider id="time" class="block95 height5 block"></custom-dimension-slider>
     <!--router-view></router-view-->
+  </div>
+  <div id="right_panel"
+    class="${regions_info.data.length > 0 ? 'block10' : 'block0'} height95 block">
+    <custom-regions-list id="regions_list" class="block95 height5 block"></custom-regions-list>
   </div>
 </template>
