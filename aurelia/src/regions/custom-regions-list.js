@@ -19,7 +19,7 @@ export default class CustomRegionsList {
     onClick(roi, selected) {
         this.regions_info.image_info.eventbus.publish(
             EVENTS.SELECT_REGIONS,
-            {ids : [roi], select : selected ? false : true, center : true});
+            {ids : [roi], select : selected, center : true});
     }
 
     unbind() {

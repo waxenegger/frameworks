@@ -10,6 +10,8 @@ export default class RegionsInfo extends EventSubscriber {
         [EVENTS.FORCE_CLEAR, () => {
             this.data = []; this.regions_image_id = null;}],
         [EVENTS.FORCE_UPDATE, () => this.requestData(true)],
+        [EVENTS.SHAPES_ADDED, (shapes) => this.data.push(
+            {shape_id: shapes[0], selected: false, visible: true})],
         [EVENTS.SHOW_REGIONS, () => this.requestData(false) ]];
 
     constructor(image_info) {

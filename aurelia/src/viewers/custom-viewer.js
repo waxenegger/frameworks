@@ -16,13 +16,15 @@ export default class CustomViewer extends EventSubscriber {
         [EVENTS.SHOW_REGIONS, (flag) => this.showRegions(flag)],
         [EVENTS.SELECT_REGIONS,
             (params={}) => this.viewer.selectShapes(
-                params.ids, false, params.center)],
+                params.ids, params.select, params.center)],
         [EVENTS.REGIONS_VISIBILITY,
             (params={}) => this.updateRegionsVisibility(params.flag, params.rois)],
         [EVENTS.REGION_SELECTED,
             (roi) => this.regions_info.setRegionProperty(roi, "selected", true)],
         [EVENTS.REGION_DESELECTED,
             (roi) => this.regions_info.setRegionProperty(roi, "selected", false)],
+        [EVENTS.DRAW_SHAPE,
+            (type) => this.viewer.drawShape(type)],
         [EVENTS.DIMENSION_CHANGE, (data, event) =>
             this.viewer.setDimensionIndex.apply(
                 this.viewer, [data.dim].concat(data.value))]

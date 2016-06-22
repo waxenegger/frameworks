@@ -27,7 +27,8 @@
     <!--router-view></router-view-->
   </div>
   <div id="right_panel"
-    class="${regions_info.data.length > 0 ? 'block10' : 'block0'} height95 block">
-    <custom-regions-list id="regions_list" class="block95 height5 block"></custom-regions-list>
+    class="${image_info.show_regions ? 'block10' : 'block0'} height95 block">
+    <custom-drawing-control id="drawing_control" class="block100 height5 block"></custom-drawing-control>
+    <custom-regions-list id="regions_list" class="block100 height95 block"></custom-regions-list>
   </div>
 </template>
