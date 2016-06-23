@@ -1,17 +1,28 @@
 import {noView} from 'aurelia-framework';
-import {EVENTS, EventSubscriber} from '../events/events.js';
+import {EVENTS, EventSubscriber} from '../events/events';
+import Misc from '../utils/misc';
 
 @noView
 export default class RegionsInfo extends EventSubscriber {
     image_info = null;
     regions_image_id = null;
-    data = [];
+    selectedShape = null;
+    data = new Map();
     sub_list = [
         [EVENTS.FORCE_CLEAR, () => {
-            this.data = []; this.regions_image_id = null;}],
+            this.data = new Map(); this.regions_image_id = null;}],
         [EVENTS.FORCE_UPDATE, () => this.requestData(true)],
-        [EVENTS.SHAPES_ADDED, (shapes) => this.data.push(
-            {shape_id: shapes[0], selected: false, visible: true})],
+        [EVENTS.REGION_DESELECTED, (roi) => this.deselectShape(roi)],
+        [EVENTS.REGION_SELECTED, (roi) => this.selectShape(roi)],
+        [EVENTS.SHAPES_ADDED, (shapes) => {
+            if (!Misc.isArray(shapes)) return;
+            shapes.map((item) => {
+                let id = item.oldId;
+                this.data.set(id,
+                    Object.assign(
+                        {selected: false, visible: true, shape_id: id},
+                        this.convertShapeObject(item)));
+            });}],
         [EVENTS.SHOW_REGIONS, () => this.requestData(false) ]];
 
     constructor(image_info) {
@@ -25,21 +36,42 @@ export default class RegionsInfo extends EventSubscriber {
         this.unsubscribe();
     }
 
-    setRegionProperty(roi, property, value = null) {
-        if (typeof roi !== 'string' || roi.indexOf(":") <1 ||
-            typeof property !== 'string' || value === null) return;
+    selectShape(roi) {
+        this.setRegionProperty(roi, "selected", true);
+        this.setSelected();
+    }
 
-        for (var i in this.data)
-            if (this.data[i].shape_id === roi) {
-                if (typeof this.data[i][property] !== 'undefined')
-                    this.data[i][property] = value;
+    deselectShape(roi) {
+        this.setRegionProperty(roi, "selected", false);
+        this.setSelected();
+    }
+
+    setSelected() {
+        this.selectedShape = null;
+        for (let [key, value] of this.data) {
+            if (value.selected) {
+                this.selectedShape = value;
                 break;
             }
+        }
+    }
+
+    convertShapeObject(shape) {
+        // TODO: implement
+        return shape;
+    }
+
+    setRegionProperty(roi, property, value = null) {
+        if (typeof roi !== 'string' || roi.indexOf(":") <1 ||
+            typeof property !== 'string' || value === null ||
+            typeof this.data.get(roi) === 'undefined') return;
+
+        this.data.get(roi)[property] = value;
     }
 
     requestData(forceUpdate = false) {
         if (forceUpdate) {
-            this.data = [];
+            this.data = new Map();
             this.regions_image_id = null;
         }
         if (!this.image_info.show_regions ||
@@ -63,11 +95,12 @@ export default class RegionsInfo extends EventSubscriber {
                       item.shapes.map((shape) => {
                           shape.visible = true;
                           shape.selected = false;
-                          let tmp = { shape_id : item.id + ":" + shape.id};
-                          this.data.push(Object.assign(tmp, shape));
+                          shape.shape_id = "" + item.id + ":" + shape.id;
+                          this.data.set(
+                              shape.shape_id, Object.assign({}, shape));
                       })});
              },
-            error : (error) => this.data = []
+            error : (error) => this.data = new Map()
         });
     }
 }

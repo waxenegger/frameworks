@@ -21,8 +21,4 @@ export default class CustomRegionsList {
             EVENTS.SELECT_REGIONS,
             {ids : [roi], select : selected, center : true});
     }
-
-    unbind() {
-        this.unsubscribe();
-    }
 }

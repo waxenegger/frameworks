@@ -16,6 +16,7 @@ bootstrap(function(aurelia) {
     .globalResources('controls/custom-dimension-slider')
     .globalResources('controls/custom-thumb-slider')
     .globalResources('regions/custom-drawing-control')
+    .globalResources('regions/custom-regions-properties')
     .globalResources('regions/custom-regions-list');
 
     let image_info =

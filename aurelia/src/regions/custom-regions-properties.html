@@ -1,0 +1,15 @@
+<template>
+  <div id="regions_properties"
+    css="text-align: center; ${regions_info.selectedShape !== null ?
+         'display: block;' : 'display: none;'}"
+         class="block100 height100 block">
+     <span class="block100 block">Properties</span>
+     <span class="block100 block">(${regions_info.selectedShape.shape_id})</span>
+     <label class="block100 block">
+         <input class="block100 block" id="props_fill_color" 
+            type="text" value="${regions_info.selectedShape.fillColor}"/>
+     </label>
+     <input class="block100 block" type="button" click.delegate="onUpdate()"
+      value="Update"/>
+  </div>
+</template>

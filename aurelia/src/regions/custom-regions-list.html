@@ -1,11 +1,11 @@
 <template>
-  <div id="regions_list" repeat.for="region of regions_info.data" style="text-align: center">
+  <div id="regions_list" repeat.for="[id, region] of regions_info.data" style="text-align: center">
       <div>
           <input type="checkbox"
             checked.bind="region.visible"
-            change.delegate="onRegionsVisibilityChange(region.visible, region.shape_id)"/>
+            change.delegate="onRegionsVisibilityChange(region.visible, id)"/>
          <span css="${region.selected ? 'color: white': ''}"
-            click.delegate="onClick(region.shape_id, region.selected)">${region.shape_id}<span>
+            click.delegate="onClick(id, region.selected)">${id}<span>
      </div>
   </div>
 </template>

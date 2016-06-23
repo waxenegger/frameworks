@@ -14,15 +14,14 @@ export default class CustomViewer extends EventSubscriber {
             (imageid) => this.viewer.changeToImage(imageid)],
         [EVENTS.FORCE_UPDATE, () => this.forceUpdate()],
         [EVENTS.SHOW_REGIONS, (flag) => this.showRegions(flag)],
+        [EVENTS.MODIFY_REGIONS,
+            (params={}) => this.viewer.modifyRegionsStyle(
+                params.shape_info, params.ids)],
         [EVENTS.SELECT_REGIONS,
             (params={}) => this.viewer.selectShapes(
                 params.ids, params.select, params.center)],
         [EVENTS.REGIONS_VISIBILITY,
             (params={}) => this.updateRegionsVisibility(params.flag, params.rois)],
-        [EVENTS.REGION_SELECTED,
-            (roi) => this.regions_info.setRegionProperty(roi, "selected", true)],
-        [EVENTS.REGION_DESELECTED,
-            (roi) => this.regions_info.setRegionProperty(roi, "selected", false)],
         [EVENTS.DRAW_SHAPE,
             (type) => this.viewer.drawShape(type)],
         [EVENTS.DIMENSION_CHANGE, (data, event) =>
@@ -68,7 +67,8 @@ export default class CustomViewer extends EventSubscriber {
             this.viewer.enableRegionsContextMenu(false);
             this.viewer.setRegionsModes([ol3.REGIONS_MODE.DEFAULT]);
             this.viewer.setRegionsVisibility(false, []);
-            this.regions_info.data.map((item) => item.selected = false);
+            for (var [key, value] of this.regions_info.data)
+                this.regions_info.data.get(key).selected = false;
         }
     }
 
