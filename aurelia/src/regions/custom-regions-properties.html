@@ -1,15 +1,36 @@
 <template>
   <div id="regions_properties"
-    css="text-align: center; ${regions_info.selectedShape !== null ?
-         'display: block;' : 'display: none;'}"
+    css="text-align: center; overflow: auto;
+        ${regions_info.selectedShape !== null ?
+            'display: block;' : 'display: none;'}"
          class="block100 height100 block">
-     <span class="block100 block">Properties</span>
-     <span class="block100 block">(${regions_info.selectedShape.shape_id})</span>
-     <label class="block100 block">
-         <input class="block100 block" id="props_fill_color" 
+     <label class="block100 block">Fill Color</label>
+     <input class="block100 block" id="props_fill_color"
             type="text" value="${regions_info.selectedShape.fillColor}"/>
-     </label>
-     <input class="block100 block" type="button" click.delegate="onUpdate()"
-      value="Update"/>
+    <label class="block100 block">Fill Alpha</label>
+     <input class="block100 block" id="props_fill_alpha"
+       type="text" value="${regions_info.selectedShape.fillAlpha}"/>
+    <label class="block100 block">Stroke Color</label>
+    <input class="block100 block" id="props_stroke_color"
+          type="text" value="${regions_info.selectedShape.strokeColor}"/>
+    <label class="block100 block">Stroke Alpha/Width</label>
+    <input class="block50 block" id="props_stroke_alpha"
+     type="text" value="${regions_info.selectedShape.strokeAlpha}"/>
+     <input class="block50 block" id="props_stroke_width"
+      type="text" value="${regions_info.selectedShape.strokeWidth}"/>
+      <label class="block100 block">Text</label>
+      <input class="block100 block" id="props_text"
+       type="text" value="${regions_info.selectedShape.textValue}"/>
+       <label class="block100 block">Font Family</label>
+       <input class="block100 block" id="props_font_family"
+        type="text" value="${regions_info.selectedShape.fontFamily}"/>
+        <label class="block100 block">Font Style/Size</label>
+        <input class="block60 block" id="props_font_style"
+         type="text" value="${regions_info.selectedShape.fontStyle}"/>
+         <input class="block40 block" id="props_font_size"
+          type="text" value="${regions_info.selectedShape.fontSize}"/>
+       <input class="block100 block" type="button" click.delegate="onUpdate()"
+        value="Update"/>
+
   </div>
 </template>

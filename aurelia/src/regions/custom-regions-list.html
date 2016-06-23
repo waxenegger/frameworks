@@ -1,5 +1,6 @@
 <template>
-  <div id="regions_list" repeat.for="[id, region] of regions_info.data" style="text-align: center">
+  <div id="regions_list" repeat.for="[id, region] of regions_info.data"
+    style="text-align: center;overflow: auto;">
       <div>
           <input type="checkbox"
             checked.bind="region.visible"

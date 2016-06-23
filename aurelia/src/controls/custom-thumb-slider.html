@@ -1,5 +1,6 @@
 <template>
-  <div id="thumb-slider" repeat.for="image of data" style="text-align: center">
+  <div id="thumb-slider" repeat.for="image of data"
+    style="text-align: center;overflow: auto;">
       <img src="${image_info.server}${image.thumb_url}"
         click.delegate="onClick(image.id)"/>
   </div>

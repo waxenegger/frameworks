@@ -57,7 +57,32 @@ export default class RegionsInfo extends EventSubscriber {
     }
 
     convertShapeObject(shape) {
-        // TODO: implement
+        if (typeof shape['@type'] === 'string') {
+            let hash = shape['@type'].lastIndexOf("#");
+            if (hash !== -1)
+                shape.type = shape['@type'].substring(hash+1);
+        }
+        if (typeof shape.FillColor === 'number') {
+            let fill = Misc.convertSignedIntegerToHexColor(shape.FillColor);
+            shape.fillColor = fill.hex;
+            shape.fillAlpha = fill.alpha;
+        }
+        if (typeof shape.StrokeWidth === 'object')
+            shape.strokeWidth = shape.StrokeWidth.Value;
+        if (typeof shape.StrokeColor === 'number') {
+            let stroke = Misc.convertSignedIntegerToHexColor(shape.StrokeColor);
+            shape.strokeColor = stroke.hex;
+            shape.strokeAlpha = stroke.alpha;
+        }
+        if (typeof shape.Text === 'string')
+            shape.text = shape.Text;
+        if (typeof shape.FontStyle === 'string')
+            shape.fontStyle = shape.FontStyle;
+        if (typeof shape.FontFamily === 'string')
+            shape.fontFamily = shape.FontFamily;
+        if (typeof shape.FontSize === 'object')
+            shape.fontSize = shape.FontSize.Value;
+
         return shape;
     }
 
