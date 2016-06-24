@@ -5,7 +5,9 @@
           <input type="checkbox"
             checked.bind="region.visible"
             change.delegate="onRegionsVisibilityChange(region.visible, id)"/>
-         <span css="${region.selected ? 'color: white': ''}"
+         <span css="${region.deleted ? 'color: red':
+                        (region.modified ? 'color: blue' :
+                            region.selected ? 'color: white' : '')}"
             click.delegate="onClick(id, region.selected)">${id}<span>
      </div>
   </div>

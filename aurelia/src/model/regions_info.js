@@ -20,8 +20,21 @@ export default class RegionsInfo extends EventSubscriber {
                 let id = item.oldId;
                 this.data.set(id,
                     Object.assign(
-                        {selected: false, visible: true, shape_id: id},
+                        {selected: false, visible: true, shape_id: id,
+                         deleted: false, modified: false},
                         this.convertShapeObject(item)));
+            });}],
+        [EVENTS.SHAPES_DELETED, (shapes) => {
+            if (!Misc.isArray(shapes)) return;
+            shapes.map((id) => {
+                let i = this.data.get(id);
+                if (i) i.deleted = true;
+            });}],
+        [EVENTS.SHAPES_MODIFIED, (shapes) => {
+            if (!Misc.isArray(shapes)) return;
+            shapes.map((id) => {
+                let i = this.data.get(id);
+                if (i) i.modified = true;
             });}],
         [EVENTS.SHOW_REGIONS, () => this.requestData(false) ]];
 
@@ -120,6 +133,8 @@ export default class RegionsInfo extends EventSubscriber {
                       item.shapes.map((shape) => {
                           shape.visible = true;
                           shape.selected = false;
+                          shape.deleteted = false;
+                          shape.modified = false;
                           shape.shape_id = "" + item.id + ":" + shape.id;
                           this.data.set(
                               shape.shape_id, Object.assign({}, shape));
