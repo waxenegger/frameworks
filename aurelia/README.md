@@ -10,6 +10,12 @@ From the project folder, execute the following command:
 npm install
 ```
 
+IMPORTANT: If your npm version is less than 3.x run
+
+```shell
+npm dedupe
+```
+
 This will install all required dependencies, including a local version of Webpack that is going to
 build and bundle the app. There is no need to install Webpack globally.
 
