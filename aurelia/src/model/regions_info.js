@@ -88,7 +88,7 @@ export default class RegionsInfo extends EventSubscriber {
             shape.strokeAlpha = stroke.alpha;
         }
         if (typeof shape.Text === 'string')
-            shape.text = shape.Text;
+            shape.textValue = shape.Text;
         if (typeof shape.FontStyle === 'string')
             shape.fontStyle = shape.FontStyle;
         if (typeof shape.FontFamily === 'string')

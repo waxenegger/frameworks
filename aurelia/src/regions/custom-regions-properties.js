@@ -12,14 +12,17 @@ export default class CustomRegionsProperties {
     }
 
     onUpdate() {
+        if ($("#props_fill_color").val().trim() !== "") {
         this.regions_info.selectedShape.fillColor =
             $("#props_fill_color").val();
         this.regions_info.selectedShape.fillAlpha =
-            parseFloat($("#props_fill_alpha").val());
+            $("#props_fill_alpha").val().trim() === "" ?
+            1 : parseFloat($("#props_fill_alpha").val());
+        }
         this.regions_info.selectedShape.strokeColor =
             $("#props_stroke_color").val();
         this.regions_info.selectedShape.strokeAlpha =
-            parseFloat($("#props_stroke_alpha").val());
+            $("#props_stroke_alpha").val();
         this.regions_info.selectedShape.strokeWidth =
             parseInt($("#props_stroke_width").val());
         this.regions_info.selectedShape.textValue = $("#props_text").val();
