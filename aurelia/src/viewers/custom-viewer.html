@@ -1,3 +1,11 @@
 <template>
-  <div id="ome_viewer" class=""></div>
+    <div class="resizable draggable block100 height100 block"
+        css="visibility: ${image_info.data_received ? 'visible' : 'hidden' }; border: solid 1px; overflow: hidden; position: relative; padding-bottom: 7px">
+        <div class="drag_handle" style="background-color: grey;">
+            <span>drag me</span>
+            <span click.delegate="closeMe()" style="float: right;">X</span>
+            <span click.delegate="reset()" style="float: right;">[Reset]</span>
+        </div>
+        <div id="ome_viewer"></div>
+    <div>
 </template>

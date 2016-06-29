@@ -4,7 +4,7 @@ import {EVENTS} from '../events/events.js';
 
 @noView
 export default class ImageInfo {
-    // default configuration needed
+    data_received = false;
     dimensions = {t: 0, max_t : 1,z: 0, max_z : 1};
     channels = null;
     tiled = false;
@@ -37,6 +37,7 @@ export default class ImageInfo {
     }
 
     requestData() {
+        this.data_received = false;
         this.eventbus.publish(EVENTS.IMAGE_CHANGE, this.image_id);
         var url = this.server + "/webgateway/imgData/" + this.image_id + '/';
         $.ajax(
@@ -52,6 +53,7 @@ export default class ImageInfo {
                     z: 0, max_z : response.size.z
                 };
                 this.show_regions = false;
+                this.data_received = true;
                 this.eventbus.publish(EVENTS.FORCE_UPDATE, this.image_id);
                 if (this.dataset_id)
                     this.eventbus.publish(EVENTS.INIT_THUMBSLIDER, this.dataset_id);

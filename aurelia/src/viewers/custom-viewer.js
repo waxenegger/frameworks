@@ -3,6 +3,8 @@ import RegionsInfo from '../model/regions_info';
 import {EVENTS, EventSubscriber} from '../events/events';
 import {inject, customElement} from 'aurelia-framework';
 
+import DragAndSizable from '../controls/dragandsizable';
+
 require('../css/viewer.css');
 import {ol3} from '../../libs/ome-viewer-1.0.js';
 
@@ -11,8 +13,13 @@ import {ol3} from '../../libs/ome-viewer-1.0.js';
 export default class CustomViewer extends EventSubscriber {
     sub_list = [
         [EVENTS.IMAGE_CHANGE,
-            (imageid) => this.viewer.changeToImage(imageid)],
+            (imageid) => {
+                this.reset();
+                this.viewer.changeToImage(imageid)
+            }],
         [EVENTS.FORCE_UPDATE, () => this.forceUpdate()],
+        [EVENTS.FORCE_CLEAR,
+            () => console.info(this.image_info.data)],
         [EVENTS.SHOW_REGIONS, (flag) => this.showRegions(flag)],
         [EVENTS.MODIFY_REGIONS,
             (params={}) => this.viewer.modifyRegionsStyle(
@@ -26,13 +33,15 @@ export default class CustomViewer extends EventSubscriber {
             (type) => this.viewer.drawShape(type)],
         [EVENTS.DIMENSION_CHANGE, (data, event) =>
             this.viewer.setDimensionIndex.apply(
-                this.viewer, [data.dim].concat(data.value))]
+                this.viewer, [data.dim].concat(data.value))],
+        [EVENTS.VIEWER_RESIZE, () => this.viewer.redraw()]
     ];
     constructor(image_info, regions_info) {
         super(image_info.eventbus)
         this.subscribe();
         this.image_info = image_info;
         this.regions_info = regions_info;
+        this.dragizable = new DragAndSizable(this.image_info.eventbus);
 
         this.viewer =
             new ol3.Viewer(this.image_info.image_id,
@@ -40,6 +49,16 @@ export default class CustomViewer extends EventSubscriber {
                   server : this.image_info.server
                 });
         this.showRegions(this.image_info.show_regions);
+    }
+
+    attached() {
+        this.dragizable.createDraggable("custom-viewer");
+        this.dragizable.createResizable("custom-viewer");
+    }
+
+    detached() {
+        this.dragizable.destroyDraggable();
+        this.dragizable.destroyResizable();
     }
 
     unsubscribe() {
@@ -95,5 +114,14 @@ export default class CustomViewer extends EventSubscriber {
         if (presentT !== newT)
         this.viewer.setDimensionIndex.apply(
             this.viewer, ['t'].concat([newT]))
+    }
+
+    reset() {
+        this.dragizable.resetPosition();
+        this.dragizable.resetSize();
+    }
+
+    closeMe() {
+        //TODO: kill widget
     }
 }
