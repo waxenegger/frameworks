@@ -27,4 +27,15 @@ export default class Misc {
                 ("00" + green.toString(16)).substr(-2) +
                 ("00" + blue.toString(16)).substr(-2)};
     }
+
+    static useJsonp(server="") {
+        if (typeof server !== 'string') {
+            return false;
+        }
+        if (server.trim() === '' ||
+                server.indexOf("localhost") !== -1)
+            return false;
+
+        return true;
+    }
 }

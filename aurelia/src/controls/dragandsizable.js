@@ -4,22 +4,16 @@ import {resizable, draggable} from 'jquery-ui';
 
 @noView
 export default class DragAndSizable {
-    resizable_element = null;
-    draggable_element = null;
-
     original_position = null;
     original_size = null;
 
-    constructor(eventbus) {
+    constructor(eventbus, aurelia_id) {
         this.eventbus = eventbus;
+        this.element = "[au-target-id=" + aurelia_id + "] div[name='frame']";
     }
 
-    createResizable(element_id) {
-        if (typeof element_id !== 'string' || $("#" + element_id).length === 0)
-            return;
-        this.resizable_element = '#' + element_id + ' .resizable';
-
-        $(this.resizable_element)
+    createResizable() {
+        $(this.element)
             .resizable({
                 containment: "parent",
                 stop: (event, ui) =>  {
@@ -28,13 +22,9 @@ export default class DragAndSizable {
                     this.eventbus.publish(EVENTS.VIEWER_RESIZE); }})
     }
 
-    createDraggable(element_id) {
-        if (typeof element_id !== 'string' || $("#" + element_id).length === 0)
-            return;
-
-        this.draggable_element = '#' + element_id + ' .draggable';
-        $(this.draggable_element)
-            .draggable({ containment: "parent",handle: ".drag_handle",
+    createDraggable() {
+        $(this.element)
+            .draggable({ containment: "parent",handle: ".drag-handle",
                 start: (event, ui) => {
                         if (this.original_position === null)
                             this.original_position = ui.position;
@@ -43,26 +33,26 @@ export default class DragAndSizable {
 
     resetPosition() {
         if (this.original_position === null) return;
-        $(this.draggable_element).css("top", 0);
-        $(this.draggable_element).css("left", 0);
+        $(this.element).css("top", 0);
+        $(this.element).css("left", 0);
     }
 
     resetSize() {
         if (this.original_size === null) return;
-        $(this.resizable_element).css("width", "");
-        $(this.resizable_element).css("height", "");
+        $(this.element).css("width", "");
+        $(this.element).css("height", "");
         this.eventbus.publish(EVENTS.VIEWER_RESIZE);
     }
 
     destroyResizable() {
         try {
-            $(this.resizable_element).resizable("destroy");
+            $(this.element).resizable("destroy");
         } catch(ignored) {}
     }
 
     destroyDraggable() {
         try {
-            $(this.draggable_element).resizable("destroy");
+            $(this.element).resizable("destroy");
         } catch(ignored) {}
     }
 }

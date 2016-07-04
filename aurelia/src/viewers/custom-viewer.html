@@ -1,11 +1,47 @@
 <template>
-    <div class="resizable draggable block100 height100 block"
-        css="visibility: ${image_info.data_received ? 'visible' : 'hidden' }; border: solid 1px; overflow: hidden; position: relative; padding-bottom: 7px">
-        <div class="drag_handle" style="background-color: grey;">
-            <span>drag me</span>
-            <span click.delegate="closeMe()" style="float: right;">X</span>
-            <span click.delegate="reset()" style="float: right;">[Reset]</span>
+    <require from="../controls/custom-dimension-slider"></require>
+
+    <div name="single_view_version"
+        if.bind="!context.useMDI" class="block100 height100 block">
+
+        <custom-dimension-slider 
+            class="block5 height95 block"
+            dim="z">
+        </custom-dimension-slider>
+
+        <div name="viewer" class="block95 height95 block">
+              <div id.bind="container" class="block100 height100"></div>
         </div>
-        <div id="ome_viewer"></div>
-    <div>
+
+        <div class="block5 height5 block"></div>
+
+        <custom-dimension-slider
+            class="block95 height5 block"
+            dim="t">
+        </custom-dimension-slider>
+    </div>
+
+    <div name="frame" if.bind="context.useMDI"
+        style="border: solid 1px;"
+        class="block100 height100 block">
+
+        <span style="background-color: grey;"
+            class="drag-handle block100 height5 block">Drag me</span>
+
+        <custom-dimension-slider
+            class="block5 height90 block"
+            dim="z">
+        </custom-dimension-slider>
+
+        <div name="viewer" class="block95 height90 block">
+              <div id.bind="container" class="block100 height100"></div>
+        </div>
+
+        <div class="block5 height5 block"></div>
+
+        <custom-dimension-slider
+            class="block95 height5 block"
+            dim="t">
+        </custom-dimension-slider>
+    </div>
 </template>

@@ -1,27 +1,32 @@
 import {inject} from 'aurelia-framework';
-import ImageInfo from '../model/image_info.js';
-import {EVENTS, EventSubscriber} from '../events/events';
-import {customElement} from 'aurelia-framework';
+import AppContext from '../app/context.js';
+import {EVENTS} from '../events/events';
+import {customElement, bindable, BindingEngine} from 'aurelia-framework';
 
-@customElement('thumb-slider')
-@inject(ImageInfo, Element)
-export default class CustomDimensionSlider extends EventSubscriber {
+@customElement('custom-thumb-slider')
+@inject(AppContext, Element, BindingEngine)
+export default class CustomThumbSlider {
+    @bindable dataset_id;
     data = [];
-    sub_list = [
-        [EVENTS.INIT_THUMBSLIDER, (dataset_id) => this.initialize(dataset_id)],
-        [EVENTS.FORCE_CLEAR, () => this.data = []]
-    ];
-    constructor(image_info, element) {
-        super(image_info.eventbus)
-        this.subscribe();
-
-        this.image_info = image_info;
+    changeObserver = null;
+    constructor(context, element, bindingEngine) {
+        this.context = context;
         this.element = element;
+        this.bindingEngine = bindingEngine;
+    }
+
+    bind() {
+        this.changeObserver =
+            this.bindingEngine.propertyObserver(this, 'dataset_id')
+            .subscribe((newValue, oldValue) =>
+                {if (newValue !== oldValue) this.initialize(newValue)});
     }
 
     initialize(dataset_id) {
+        if (dataset_id == null) return;
         var url =
-            this.image_info.server + "/webgateway/dataset/" + dataset_id + '/children/';
+            this.context.server +
+            "/webgateway/dataset/" + dataset_id + '/children/';
         $.ajax(
             {url : url,
             dataType : "jsonp",
@@ -35,10 +40,14 @@ export default class CustomDimensionSlider extends EventSubscriber {
     }
 
     onClick(image_id) {
-        this.image_info.image_id = image_id;
+        this.context.publish(EVENTS.IMAGE_CHANGE, image_id);
     }
 
     unbind() {
-        this.unsubscribe();
+        if (this.changeObserver) {
+            this.changeObserver.dispose();
+            this.changeObserver = null;
+        }
+        this.image_info = null;
     }
 }

@@ -1,13 +1,14 @@
 import {inject} from 'aurelia-framework';
-import RegionsInfo from '../model/regions_info.js';
+import AppContext from '../app/context.js';
 import {EVENTS} from '../events/events';
-import {customElement} from 'aurelia-framework';
+import {customElement, bindable} from 'aurelia-framework';
 
 @customElement('custom-regions-properties')
-@inject(RegionsInfo, Element)
+@inject(AppContext, Element)
 export default class CustomRegionsProperties {
-    constructor(regions_info, element) {
-        this.regions_info = regions_info;
+    @bindable regions_info = null
+    constructor(context, element) {
+        this.context = context;
         this.element = element;
     }
 
@@ -42,7 +43,10 @@ export default class CustomRegionsProperties {
             ids: [this.regions_info.selectedShape.shape_id],
             shape_info : Object.assign({}, this.regions_info.selectedShape)
         };
-        this.regions_info.image_info.eventbus.publish(
-            EVENTS.MODIFY_REGIONS, params);
+        this.context.publish(EVENTS.MODIFY_REGIONS, params);
+    }
+
+    unbinf() {
+        this.regions_info = null;
     }
 }

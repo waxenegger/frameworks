@@ -39,14 +39,18 @@ export default class RegionsInfo extends EventSubscriber {
         [EVENTS.SHOW_REGIONS, () => this.requestData(false) ]];
 
     constructor(image_info) {
-        super(image_info.eventbus);
-        this.subscribe();
-
+        super(image_info.context.eventbus);
         this.image_info = image_info;
+    }
+
+    bind() {
+        this.subscribe();
     }
 
     unbind() {
         this.unsubscribe();
+        this.data.clear();
+        this.selectedShape = null;
     }
 
     selectShape(roi) {
@@ -109,7 +113,7 @@ export default class RegionsInfo extends EventSubscriber {
 
     requestData(forceUpdate = false) {
         if (forceUpdate) {
-            this.data = new Map();
+            this.data.clear();
             this.regions_image_id = null;
         }
         if (!this.image_info.show_regions ||
@@ -118,11 +122,15 @@ export default class RegionsInfo extends EventSubscriber {
 
         this.regions_image_id = this.image_info.image_id;
 
-        var url = this.image_info.server + "/webgateway/get_rois_json/" +
+        let url = this.image_info.context.server + "/webgateway/get_rois_json/" +
          this.image_info.image_id + '/';
+        let dataType = "json";
+        if (Misc.useJsonp(this.image_info.context.server)) dataType += "p";
+
         $.ajax(
             {url : url,
-            dataType : "jsonp",
+            dataType : dataType,
+            cache : false,
             success : (response) => {
                 if (typeof response !== 'object' ||
                  typeof response.length !== 'number') return;
@@ -138,9 +146,10 @@ export default class RegionsInfo extends EventSubscriber {
                           shape.shape_id = "" + item.id + ":" + shape.id;
                           this.data.set(
                               shape.shape_id, Object.assign({}, shape));
+                          this.image_info.context.publish(EVENTS.VIEWER_RESIZE);
                       })});
              },
-            error : (error) => this.data = new Map()
+            error : (error) => this.data.clear()
         });
     }
 }

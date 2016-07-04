@@ -1,18 +1,29 @@
 import {inject} from 'aurelia-framework';
-import ImageInfo from '../model/image_info';
+import AppContext from '../app/context';
 import {EVENTS} from '../events/events';
-import {customElement} from 'aurelia-framework';
+import {customElement, bindable} from 'aurelia-framework';
 
 @customElement('custom-drawing-control')
-@inject(ImageInfo, Element)
-export default class CustomDrawingControl {
-    constructor(image_info, element) {
-        this.image_info = image_info;
+@inject(AppContext, Element)
+export default class CustomDrawingControl{
+    @bindable image_info = null
+
+    sub_list = [
+        [EVENTS.FORCE_CLEAR, () => this.image_info = null],
+        [EVENTS.FORCE_UPDATE, (params = {}) =>
+            this.image_info = this.context.getImageConfig(params.image_id)]];
+
+    constructor(context, element) {
+        this.context = context;
         this.element = element;
     }
 
     onChange(event) {
-        this.image_info.eventbus.publish(EVENTS.DRAW_SHAPE, event.target.value);
+        this.context.publish(EVENTS.DRAW_SHAPE, event.target.value);
         event.target.value = "";
+    }
+
+    unbind() {
+        this.image_info = null;
     }
 }

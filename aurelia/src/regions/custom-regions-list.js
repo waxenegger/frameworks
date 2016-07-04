@@ -1,24 +1,30 @@
 import {inject} from 'aurelia-framework';
-import RegionsInfo from '../model/regions_info.js';
-import {EVENTS} from '../events/events';
-import {customElement} from 'aurelia-framework';
+import AppContext from '../app/context.js';
+import {EVENTS, EventSubscriber} from '../events/events';
+import {customElement, bindable} from 'aurelia-framework';
 
 @customElement('custom-regions-list')
-@inject(RegionsInfo, Element)
+@inject(AppContext, Element)
 export default class CustomRegionsList {
-    constructor(regions_info, element) {
-        this.regions_info = regions_info;
+
+    @bindable regions_info = null
+    constructor(context, element) {
+        this.context = context;
         this.element = element;
     }
 
     onRegionsVisibilityChange(flag, roi) {
-        this.regions_info.image_info.eventbus.publish(
+        this.context.publish(
             EVENTS.REGIONS_VISIBILITY, {flag : flag, rois : [roi]});
     }
 
     onClick(roi, selected) {
-        this.regions_info.image_info.eventbus.publish(
+        this.context.publish(
             EVENTS.SELECT_REGIONS,
             {ids : [roi], select : selected, center : true});
+    }
+
+    unbind() {
+        this.regions_info = null;
     }
 }

@@ -1,0 +1,52 @@
+<template>
+    <require from="../viewers/custom-viewer"></require>
+    <require from="../controls/custom-thumb-slider"></require>
+    <require from="../controls/custom-dimension-slider"></require>
+    <require from="../regions/custom-drawing-control"></require>
+    <require from="../regions/custom-regions-list"></require>
+    <require from="../regions/custom-regions-properties"></require>
+
+  <div id="header" class="block100 height5 block">
+      <div class="block20 block">&nbsp;</div>
+      <input type="text" id="image_id" value="" class="block10 block" />
+      <input type="button" click.delegate="openImage()"
+        value="Change Image" class="block10 block" />
+      <div class="block10 block">&nbsp;</div>
+      <label class="block20 block">
+          <input id="show_regions" type="checkbox"
+            checked.bind="show_regions"
+            change.delegate="onRegionsShowChange()"/>
+          Show Regions
+      </label>
+      <div class="block30 block">&nbsp;</div>
+  </div>
+
+  <div id="left_panel"
+    class="${image_config.image_info.dataset_id ? 'block10' : 'block0'} height95 block">
+      <custom-thumb-slider
+        dataset_id.bind="image_config.image_info.dataset_id"
+        class="block100 height100 block"></custom-thumb-slider>
+  </div>
+
+  <div id="center" class="${image_config.image_info.dataset_id ? 'block80' : 'block90'} height95 block">
+      <custom-viewer
+        class="block100 height100 block" style="position: relative;">
+    </custom-viewer>
+  </div>
+
+  <div id="right_panel" class="${show_regions ? 'block10' : 'block0'} height95 block">
+    <custom-drawing-control
+        id="drawing_control"
+        image_info.bind="image_config.image_info"
+        class="block100 height5 block">
+    </custom-drawing-control>
+    <custom-regions-list
+        regions_info.bind="image_config.regions_info"
+        class="block100 height55 block"></custom-regions-list>
+    <custom-regions-properties
+        regions_info.bind="image_config.regions_info"
+        class="block100 height40 block">
+    </custom-regions-properties>
+</div>
+
+</template>

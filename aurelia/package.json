@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "description": "Aurelia Example",
   "scripts": {
-    "dev": "webpack-dev-server --config webpack.config.js --hot --inline --progress --devtool eval",
+    "dev": "UV_THREADPOOL_SIZE=100 webpack-dev-server --config webpack.config.js --hot --inline --progress --devtool eval",
     "build": "webpack --config webpack.config.js --progress --profile",
     "prod": "webpack -p --config webpack.prod.config.js --progress",
     "webdriver:update": "./node_modules/.bin/webdriver-manager update",
@@ -47,7 +47,7 @@
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
-    "webpack": "^1.12.14",
+    "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   }
 }

@@ -10,7 +10,6 @@ export const EVENTS = {
     REGION_DESELECTED : "REGION_DESELECTED",
     SELECT_REGIONS : "SELECT_REGIONS",
     MODIFY_REGIONS : "MODIFY_REGIONS",
-    INIT_THUMBSLIDER : "INIT_THUMBSLIDER",
     DRAW_SHAPE : "DRAW_SHAPE",
     SHAPES_ADDED : "SHAPES_ADDED",
     SHAPES_MODIFIED : "SHAPES_MODIFIED",
@@ -37,6 +36,6 @@ export class EventSubscriber {
     unsubscribe() {
         if (this.subscriptions.length === 0) return;
         while (this.subscriptions.length > 0)
-            (this.subscriptions.pop())();
+            this.subscriptions.pop().dispose();
     }
 }
