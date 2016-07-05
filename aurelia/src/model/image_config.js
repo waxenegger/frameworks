@@ -9,7 +9,8 @@ export default class ImageConfig {
     regions_info = null;
 
     constructor(context, image_id) {
-        this.image_info = new ImageInfo(context, image_id);
+        this.id = new Date().getTime();
+        this.image_info = new ImageInfo(context, this.id, image_id);
         this.regions_info = new RegionsInfo(this.image_info)
     }
 

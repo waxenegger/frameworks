@@ -10,58 +10,67 @@ import {ol3} from '../../libs/ome-viewer-1.0.js';
 @customElement('custom-viewer')
 @inject(AppContext, Element)
 export default class CustomViewer extends EventSubscriber {
+    @bindable config_id=null;
     image_config = null;
     dragizable = null;
     sub_list = [
-        [EVENTS.IMAGE_CHANGE,
-            (imageid) => {
-                this.image_config = this.context.getSelectedImageConfig()
-                if (this.context.useMDI) this.reset();
-                this.viewer.changeToImage(imageid);
-                if (this.context.useMDI) this.viewer.redraw();
-            }],
-        [EVENTS.FORCE_UPDATE, () => this.forceUpdate()],
-        [EVENTS.SHOW_REGIONS, (flag) => this.showRegions(flag)],
-        [EVENTS.MODIFY_REGIONS,
-            (params={}) => this.viewer.modifyRegionsStyle(
-                params.shape_info, params.ids)],
-        [EVENTS.SELECT_REGIONS,
-            (params={}) => this.viewer.selectShapes(
-                params.ids, params.select, params.center)],
-        [EVENTS.REGIONS_VISIBILITY,
-            (params={}) => this.updateRegionsVisibility(params.flag, params.rois)],
-        [EVENTS.DRAW_SHAPE,
-            (type) => {
-                this.viewer.redraw();
-                this.viewer.drawShape(type)
-            }],
-        [EVENTS.DIMENSION_CHANGE, (data, event) =>
+        [EVENTS.UPDATE_COMPONENT, (params={}) => {
+            if (params.config_id !== this.config_id) return;
+            this.forceUpdate();}],
+        [EVENTS.SHOW_REGIONS, (flag) => {
+            this.showRegions(flag);this.viewer.redraw();}],
+        [EVENTS.MODIFY_REGIONS, (params={}) => {
+            if (params.config_id !== this.config_id) return;
+            this.viewer.modifyRegionsStyle(
+                params.shape_info, params.ids);}],
+        [EVENTS.SELECT_REGIONS, (params={}) => {
+            if (params.config_id !== this.config_id) return;
+            this.viewer.selectShapes(
+                params.ids, params.select, params.center)}],
+        [EVENTS.REGIONS_VISIBILITY, (params={}) => {
+            if (params.config_id !== this.config_id) return;
+            this.updateRegionsVisibility(params.flag, params.rois)}],
+        [EVENTS.DRAW_SHAPE, (params={}) => {
+            if (params.config_id !== this.config_id) return;
+            this.viewer.redraw();
+            this.viewer.drawShape(params.shape)}],
+        [EVENTS.DIMENSION_CHANGE, (params={}) => {
+            if (params.config_id !== this.config_id) return;
             this.viewer.setDimensionIndex.apply(
-                this.viewer, [data.dim].concat(data.value))],
-        [EVENTS.VIEWER_RESIZE, () => this.viewer.redraw()]
+                this.viewer, [params.dim].concat(params.value));}],
+        [EVENTS.VIEWER_RESIZE, (params={}) => {
+            if (params.config_id !== this.config_id) return;
+            this.viewer.redraw();
+        }]
     ];
+
     constructor(context, element) {
         super(context.eventbus)
         this.context = context;
         this.element = element;
-        this.aurelia_id = $(this.element).attr("au-target-id");
-        this.container = 'ol3_viewer_' + this.aurelia_id;
-        this.image_config = this.context.getSelectedImageConfig();
     }
 
-    attached() {
+    bind() {
+        if (this.context.useMDI) this.element.parentNode.id = this.config_id;
+        this.container = 'ol3_viewer_' + this.config_id;
+        this.image_config = this.context.getImageConfig(this.config_id);
+
         this.viewer =
             new ol3.Viewer(this.image_config.image_info.image_id,
                 { eventbus : this.context.eventbus,
                   server : this.context.server,
                   container: this.container
                 });
-        this.showRegions(false);
         this.subscribe();
+        this.showRegions(this.image_config.image_info.show_regions);
+    }
+
+    attached() {
         if (this.context.useMDI) {
             this.dragizable =
                 new DragAndSizable
-                    (this.context.eventbus, this.aurelia_id);
+                    (this.context, this.config_id);
+                this.dragizable.bind();
                 this.dragizable.createDraggable();
                 this.dragizable.createResizable();
         }
@@ -69,6 +78,7 @@ export default class CustomViewer extends EventSubscriber {
 
     detached() {
         if (this.dragizable) {
+            this.dragizable.unbind();
             this.dragizable.destroyDraggable();
             this.dragizable.destroyResizable();
             this.dragizable = null;
@@ -94,18 +104,15 @@ export default class CustomViewer extends EventSubscriber {
             this.viewer.enableRegionsContextMenu(false);
             this.viewer.setRegionsModes([ol3.REGIONS_MODE.DEFAULT]);
             this.viewer.setRegionsVisibility(false, []);
-            if (this.image_config.region_info)
-                for (var [key, value] of this.image_config.region_info.data)
-                    this.image_config.region_info.data.get(key).selected = false;
+            for (var [key, value] of this.image_config.regions_info.data)
+                this.image_config.regions_info.data.get(key).selected = false;
         }
     }
 
     unbind() {
         this.unsubscribe();
-        if (this.viewer) {
-            this.viewer.destroyViewer();
-            this.viewer = null;
-        }
+        if (this.viewer) this.viewer.destroyViewer();
+        this.viewer = null;
         this.image_config = null;
     }
 

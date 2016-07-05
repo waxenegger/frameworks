@@ -7,9 +7,19 @@ export default class DragAndSizable {
     original_position = null;
     original_size = null;
 
-    constructor(eventbus, aurelia_id) {
-        this.eventbus = eventbus;
-        this.element = "[au-target-id=" + aurelia_id + "] div[name='frame']";
+    constructor(context, config_id) {
+        this.context = context;
+        this.config_id = config_id;
+        this.element = "#" + this.config_id;
+    }
+
+    bind() {
+        $(this.element).on("focusin click",
+            () => this.context.selectConfig(this.config_id));
+    }
+
+    unbind() {
+        $(this.element).off("focusin click");
     }
 
     createResizable() {
@@ -19,7 +29,8 @@ export default class DragAndSizable {
                 stop: (event, ui) =>  {
                     if (this.original_size === null)
                         this.original_size = ui.originalSize;
-                    this.eventbus.publish(EVENTS.VIEWER_RESIZE); }})
+                    this.context.publish(EVENTS.VIEWER_RESIZE,
+                        {config_id: this.config_id}); }});
     }
 
     createDraggable() {
@@ -41,7 +52,8 @@ export default class DragAndSizable {
         if (this.original_size === null) return;
         $(this.element).css("width", "");
         $(this.element).css("height", "");
-        this.eventbus.publish(EVENTS.VIEWER_RESIZE);
+        this.context.publish(EVENTS.VIEWER_RESIZE,
+            {config_id: this.config_id});
     }
 
     destroyResizable() {

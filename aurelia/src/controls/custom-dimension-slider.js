@@ -7,12 +7,15 @@ import {slider} from 'jquery-ui';
 @customElement('custom-dimension-slider')
 @inject(AppContext, Element)
 export default class CustomDimensionSlider extends EventSubscriber {
-    image_info = null;
+    @bindable config_id = null;
     @bindable dim = 't';
-    sub_list = [[EVENTS.FORCE_CLEAR, (params = {}) => {
+    sub_list = [[EVENTS.RESET_COMPONENT, (params = {}) => {
+        if (params.config_id !== this.config_id) return;
         this.image_info = null; this.forceUpdate() }]];
-    sub_list = [[EVENTS.FORCE_UPDATE, (params = {}) => {
-        this.image_info = this.context.getSelectedImageConfig().image_info;
+    sub_list = [[EVENTS.UPDATE_COMPONENT, (params = {}) => {
+        if (params.config_id !== this.config_id) return;
+        this.image_info =
+            this.context.getImageConfig(this.config_id).image_info;
         this.forceUpdate() }]];
 
     constructor(context, element) {
@@ -56,7 +59,9 @@ export default class CustomDimensionSlider extends EventSubscriber {
         this.image_info.dimensions[this.dim] = parseInt(value);
         this.context.publish(
             EVENTS.DIMENSION_CHANGE,
-            {dim: this.dim, value: [this.image_info.dimensions[this.dim]]});
+            {config_id: this.config_id,
+                dim: this.dim,
+                value: [this.image_info.dimensions[this.dim]]});
     }
 
     forceUpdate() {

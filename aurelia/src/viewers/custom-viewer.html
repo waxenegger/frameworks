@@ -1,47 +1,21 @@
 <template>
     <require from="../controls/custom-dimension-slider"></require>
 
-    <div name="single_view_version"
-        if.bind="!context.useMDI" class="block100 height100 block">
+    <custom-dimension-slider
+        config_id.bind="config_id"
+        class="block5 height95 block"
+        dim="z">
+    </custom-dimension-slider>
 
-        <custom-dimension-slider 
-            class="block5 height95 block"
-            dim="z">
-        </custom-dimension-slider>
-
-        <div name="viewer" class="block95 height95 block">
-              <div id.bind="container" class="block100 height100"></div>
-        </div>
-
-        <div class="block5 height5 block"></div>
-
-        <custom-dimension-slider
-            class="block95 height5 block"
-            dim="t">
-        </custom-dimension-slider>
+    <div name="viewer" class="block95 height95 block">
+          <div id.bind="container" class="block100 height100"></div>
     </div>
 
-    <div name="frame" if.bind="context.useMDI"
-        style="border: solid 1px;"
-        class="block100 height100 block">
+    <div class="block5 height5 block"></div>
 
-        <span style="background-color: grey;"
-            class="drag-handle block100 height5 block">Drag me</span>
-
-        <custom-dimension-slider
-            class="block5 height90 block"
-            dim="z">
-        </custom-dimension-slider>
-
-        <div name="viewer" class="block95 height90 block">
-              <div id.bind="container" class="block100 height100"></div>
-        </div>
-
-        <div class="block5 height5 block"></div>
-
-        <custom-dimension-slider
-            class="block95 height5 block"
-            dim="t">
-        </custom-dimension-slider>
-    </div>
+    <custom-dimension-slider
+        config_id.bind="config_id"
+        class="block95 height5 block"
+        dim="t">
+    </custom-dimension-slider>
 </template>

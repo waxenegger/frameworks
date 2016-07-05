@@ -1,32 +1,36 @@
 import {inject} from 'aurelia-framework';
 import AppContext from '../app/context.js';
-import {EVENTS} from '../events/events';
-import {customElement, bindable, BindingEngine} from 'aurelia-framework';
+import {EVENTS, EventSubscriber} from '../events/events';
+import {customElement} from 'aurelia-framework';
 
 @customElement('custom-thumb-slider')
-@inject(AppContext, Element, BindingEngine)
-export default class CustomThumbSlider {
-    @bindable dataset_id;
+@inject(AppContext, Element)
+export default class CustomThumbSlider extends EventSubscriber {
     data = [];
-    changeObserver = null;
-    constructor(context, element, bindingEngine) {
+    sub_list = [
+        [EVENTS.UPDATE_COMPONENT, (params={}) => this.initialize(params.dataset_id)]];
+
+    constructor(context, element) {
+        super(context.eventbus)
         this.context = context;
         this.element = element;
-        this.bindingEngine = bindingEngine;
     }
 
     bind() {
-        this.changeObserver =
-            this.bindingEngine.propertyObserver(this, 'dataset_id')
-            .subscribe((newValue, oldValue) =>
-                {if (newValue !== oldValue) this.initialize(newValue)});
+        this.subscribe();
+    }
+
+    unbind() {
+        this.unsubscribe();
     }
 
     initialize(dataset_id) {
         if (dataset_id == null) return;
+
         var url =
             this.context.server +
             "/webgateway/dataset/" + dataset_id + '/children/';
+
         $.ajax(
             {url : url,
             dataType : "jsonp",
@@ -40,14 +44,6 @@ export default class CustomThumbSlider {
     }
 
     onClick(image_id) {
-        this.context.publish(EVENTS.IMAGE_CHANGE, image_id);
-    }
-
-    unbind() {
-        if (this.changeObserver) {
-            this.changeObserver.dispose();
-            this.changeObserver = null;
-        }
-        this.image_info = null;
+        this.context.addImageConfig(image_id);
     }
 }

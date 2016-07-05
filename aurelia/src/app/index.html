@@ -14,38 +14,49 @@
       <div class="block10 block">&nbsp;</div>
       <label class="block20 block">
           <input id="show_regions" type="checkbox"
-            checked.bind="show_regions"
-            change.delegate="onRegionsShowChange()"/>
+            change.delegate="showRegions()"/>
           Show Regions
       </label>
-      <div class="block30 block">&nbsp;</div>
+      <div class="block10 block">&nbsp;</div>
+      <label class="block20 block">
+          <input id="use_mdi" type="checkbox"
+            change.delegate="useMDIMode()"/>
+          Use MDI
+      </label>
   </div>
 
   <div id="left_panel"
-    class="${image_config.image_info.dataset_id ? 'block10' : 'block0'} height95 block">
-      <custom-thumb-slider
-        dataset_id.bind="image_config.image_info.dataset_id"
-        class="block100 height100 block"></custom-thumb-slider>
+    class="block10 height95 block">
+      <custom-thumb-slider class="block100 height100 block"></custom-thumb-slider>
   </div>
 
-  <div id="center" class="${image_config.image_info.dataset_id ? 'block80' : 'block90'} height95 block">
-      <custom-viewer
-        class="block100 height100 block" style="position: relative;">
-    </custom-viewer>
+  <div id="center" class="${context.show_regions ? 'block80' : 'block90'} height95 block">
+      <div name="frame" if.bind="context.useMDI" tabindex="-1"
+        repeat.for="[id, conf] of context.image_configs"
+          focus.delegate="selectImage(id)"
+          style="position: relative; border: solid 1px;" class="block50 height50 block">
+          <div class="drag-handle block100 height5 block"
+                css="background-color: ${ context.selected_config === id ? 'red' : 'grey'};">
+              <span>${id}</span>
+              <span click.delegate="closeImage(id)" style="float: right;">[X]</span>
+          </div>
+          <custom-viewer
+            config_id.bind="id" class="block100 height95 block" style="position: relative;">
+          </custom-viewer>
+      </div>
+      <custom-viewer if.bind="!context.useMDI"
+        repeat.for="[id, conf] of context.image_configs"
+        config_id.bind="id" class="block100 height100 block" style="position: relative;">
+      </custom-viewer>
+
   </div>
 
-  <div id="right_panel" class="${show_regions ? 'block10' : 'block0'} height95 block">
+  <div id="right_panel" class="${context.show_regions ? 'block10' : 'block0'} height95 block">
     <custom-drawing-control
-        id="drawing_control"
-        image_info.bind="image_config.image_info"
-        class="block100 height5 block">
+        id="drawing_control" class="block100 height5 block">
     </custom-drawing-control>
-    <custom-regions-list
-        regions_info.bind="image_config.regions_info"
-        class="block100 height55 block"></custom-regions-list>
-    <custom-regions-properties
-        regions_info.bind="image_config.regions_info"
-        class="block100 height40 block">
+    <custom-regions-list class="block100 height55 block"></custom-regions-list>
+    <custom-regions-properties class="block100 height40 block">
     </custom-regions-properties>
 </div>
 

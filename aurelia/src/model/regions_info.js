@@ -9,14 +9,21 @@ export default class RegionsInfo extends EventSubscriber {
     selectedShape = null;
     data = new Map();
     sub_list = [
-        [EVENTS.FORCE_CLEAR, () => {
+        [EVENTS.RESET_COMPONENT, () => {
             this.data = new Map(); this.regions_image_id = null;}],
-        [EVENTS.FORCE_UPDATE, () => this.requestData(true)],
-        [EVENTS.REGION_DESELECTED, (roi) => this.deselectShape(roi)],
-        [EVENTS.REGION_SELECTED, (roi) => this.selectShape(roi)],
-        [EVENTS.SHAPES_ADDED, (shapes) => {
-            if (!Misc.isArray(shapes)) return;
-            shapes.map((item) => {
+        [EVENTS.UPDATE_COMPONENT, (params={}) => {
+            if (params.config_id !== this.image_info.config_id) return;
+            this.requestData(true)}],
+        [EVENTS.REGION_DESELECTED, (params={}) => {
+            if (params.config_id !== this.image_info.config_id) return;
+            this.deselectShape(params.id);}],
+        [EVENTS.REGION_SELECTED, (params={}) => {
+            if (params.config_id !== this.image_info.config_id) return;
+            this.selectShape(params.id)}],
+        [EVENTS.SHAPES_ADDED, (params={}) => {
+            if (params.config_id !== this.image_info.config_id ||
+                !Misc.isArray(params.shapes)) return;
+            params.shapes.map((item) => {
                 let id = item.oldId;
                 this.data.set(id,
                     Object.assign(
@@ -24,15 +31,17 @@ export default class RegionsInfo extends EventSubscriber {
                          deleted: false, modified: false},
                         this.convertShapeObject(item)));
             });}],
-        [EVENTS.SHAPES_DELETED, (shapes) => {
-            if (!Misc.isArray(shapes)) return;
-            shapes.map((id) => {
+        [EVENTS.SHAPES_DELETED, (params={}) => {
+            if (params.config_id !== this.image_info.config_id ||
+                !Misc.isArray(params.ids)) return;
+            params.ids.map((id) => {
                 let i = this.data.get(id);
                 if (i) i.deleted = true;
             });}],
-        [EVENTS.SHAPES_MODIFIED, (shapes) => {
-            if (!Misc.isArray(shapes)) return;
-            shapes.map((id) => {
+        [EVENTS.SHAPES_MODIFIED, (params={}) => {
+            if (params.config_id !== this.image_info.config_id ||
+                !Misc.isArray(params.ids)) return;
+            params.ids.map((id) => {
                 let i = this.data.get(id);
                 if (i) i.modified = true;
             });}],
@@ -51,6 +60,7 @@ export default class RegionsInfo extends EventSubscriber {
         this.unsubscribe();
         this.data.clear();
         this.selectedShape = null;
+        this.image_info = null;
     }
 
     selectShape(roi) {
@@ -146,7 +156,9 @@ export default class RegionsInfo extends EventSubscriber {
                           shape.shape_id = "" + item.id + ":" + shape.id;
                           this.data.set(
                               shape.shape_id, Object.assign({}, shape));
-                          this.image_info.context.publish(EVENTS.VIEWER_RESIZE);
+                          this.image_info.context.publish(
+                              EVENTS.VIEWER_RESIZE,
+                          {config_id: this.image_info.config_id});
                       })});
              },
             error : (error) => this.data.clear()

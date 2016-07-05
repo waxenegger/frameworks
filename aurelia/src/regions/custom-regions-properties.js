@@ -1,15 +1,31 @@
 import {inject} from 'aurelia-framework';
 import AppContext from '../app/context.js';
-import {EVENTS} from '../events/events';
-import {customElement, bindable} from 'aurelia-framework';
+import {EVENTS, EventSubscriber} from '../events/events';
+import {customElement} from 'aurelia-framework';
 
 @customElement('custom-regions-properties')
 @inject(AppContext, Element)
-export default class CustomRegionsProperties {
-    @bindable regions_info = null
+export default class CustomRegionsProperties extends EventSubscriber {
+    regions_info = null
+
+    sub_list = [
+        [EVENTS.RESET_COMPONENT, (params = {}) => this.regions_info = null],
+        [EVENTS.SELECTED_CONFIG, (params = {}) => {
+            if (this.context.getSelectedImageConfig() === null);
+            this.regions_info = this.context.getSelectedImageConfig().regions_info}],
+        [EVENTS.SHOW_REGIONS, (params = {}) => {
+            if (this.context.getSelectedImageConfig() === null);
+            this.regions_info = this.context.getSelectedImageConfig().regions_info;}]];
+
     constructor(context, element) {
+        super(context.eventbus);
         this.context = context;
         this.element = element;
+    }
+
+    bind() {
+        this.subscribe();
+        this.regions_info = this.context.getSelectedImageConfig().regions_info;
     }
 
     onUpdate() {
@@ -40,13 +56,15 @@ export default class CustomRegionsProperties {
         }
 
         var params = {
+            config_id: this.regions_info.image_info.config_id,
             ids: [this.regions_info.selectedShape.shape_id],
             shape_info : Object.assign({}, this.regions_info.selectedShape)
         };
         this.context.publish(EVENTS.MODIFY_REGIONS, params);
     }
 
-    unbinf() {
+    unbind() {
+        this.unsubscribe();
         this.regions_info = null;
     }
 }

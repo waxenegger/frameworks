@@ -9,9 +9,11 @@ export default class ImageInfo {
     tiled = false;
     show_regions = false;
 
-    constructor(context, image_id) {
+    constructor(context, config_id, image_id) {
         this.context = context;
+        this.config_id = config_id;
         this.image_id = image_id;
+        this.show_regions = context.show_regions;
         this.dataset_id = null;
     }
 
@@ -24,12 +26,15 @@ export default class ImageInfo {
         this.channels = null;
         this.tiled = false;
         this.show_regions = false;
+        this.context = null;
     }
 
     requestData() {
         let dataType = "json";
         if (Misc.useJsonp(this.context.server)) dataType += "p";
+
         let url = this.context.server + "/webgateway/imgData/" + this.image_id + '/';
+
         $.ajax(
             {url : url,
             dataType : dataType,
@@ -44,11 +49,14 @@ export default class ImageInfo {
                     z: 0, max_z : response.size.z
                 };
                 this.context.publish(
-                    EVENTS.FORCE_UPDATE,
-                        {dataset_id: this.dataset_id, image_id: this.image_id});
+                    EVENTS.UPDATE_COMPONENT,
+                        {config_id: this.config_id,
+                        dataset_id: this.dataset_id});
             },
             error : (error) => {
-                this.context.publish(EVENTS.FORCE_CLEAR);
+                this.context.publish(EVENTS.RESET_COMPONENT,
+                    {config_id: this.config_id,
+                    dataset_id: this.dataset_id});
             }
         });
     }
