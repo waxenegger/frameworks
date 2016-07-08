@@ -31,10 +31,11 @@
   </div>
 
   <div id="center" class="${context.show_regions ? 'block80' : 'block90'} height95 block"
-    style="position: relative; padding: 2px">
+    style="position: relative; padding-left: 2px, padding-top: 2px; padding-right: 5px; padding-bottom: 5px">
       <div name="frame" if.bind="context.useMDI" tabindex="-1"
         repeat.for="[id, conf] of context.image_configs"
-          style="border: solid 1px; margin:2px;" class="block49 height49 block">
+          style="background-color: rgba(255,255,255,1); border: solid 1px; margin:2px;"
+          class="block49 height49 block">
           <div class="drag-handle block100 height5 block"
                 css="background-color: ${ context.selected_config === id ? 'red' : 'grey'};">
               <span>${id}</span>
