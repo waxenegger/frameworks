@@ -11,10 +11,10 @@ export default class CustomRegionsProperties extends EventSubscriber {
     sub_list = [
         [EVENTS.RESET_COMPONENT, (params = {}) => this.regions_info = null],
         [EVENTS.SELECTED_CONFIG, (params = {}) => {
-            if (this.context.getSelectedImageConfig() === null);
+            if (this.context.getSelectedImageConfig() === null) return;
             this.regions_info = this.context.getSelectedImageConfig().regions_info}],
         [EVENTS.SHOW_REGIONS, (params = {}) => {
-            if (this.context.getSelectedImageConfig() === null);
+            if (this.context.getSelectedImageConfig() === null) return;
             this.regions_info = this.context.getSelectedImageConfig().regions_info;}]];
 
     constructor(context, element) {

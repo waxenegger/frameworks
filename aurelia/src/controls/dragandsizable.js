@@ -4,8 +4,6 @@ import {resizable, draggable} from 'jquery-ui';
 
 @noView
 export default class DragAndSizable {
-    original_position = null;
-    original_size = null;
 
     constructor(context, config_id) {
         this.context = context;
@@ -14,12 +12,14 @@ export default class DragAndSizable {
     }
 
     bind() {
-        $(this.element).on("focusin click",
-            () => this.context.selectConfig(this.config_id));
+        $(this.element).on("mousedown",
+            () => {this.context.selectConfig(this.config_id);
+                    $("div [name='frame']").css("z-index", 100);
+                    $(this.element).css("z-index", 1000);});
     }
 
     unbind() {
-        $(this.element).off("focusin click");
+        $(this.element).off("mousedown");
     }
 
     createResizable() {
@@ -27,33 +27,23 @@ export default class DragAndSizable {
             .resizable({
                 containment: "parent",
                 stop: (event, ui) =>  {
-                    if (this.original_size === null)
-                        this.original_size = ui.originalSize;
+                    $(this.element).attr("prev_width", ui.size.width);
+                    $(this.element).attr("prev_height", ui.size.height);
                     this.context.publish(EVENTS.VIEWER_RESIZE,
                         {config_id: this.config_id}); }});
+        $(this.element).attr("init_width", $(this.element).width());
+        $(this.element).attr("init_height", $(this.element).height());
     }
 
     createDraggable() {
         $(this.element)
             .draggable({ containment: "parent",handle: ".drag-handle",
-                start: (event, ui) => {
-                        if (this.original_position === null)
-                            this.original_position = ui.position;
+                stop: (event, ui) => {
+                    $(this.element).attr("prev_top", ui.position.top);
+                    $(this.element).attr("prev_left", ui.position.left);
                 }});
-    }
-
-    resetPosition() {
-        if (this.original_position === null) return;
-        $(this.element).css("top", 0);
-        $(this.element).css("left", 0);
-    }
-
-    resetSize() {
-        if (this.original_size === null) return;
-        $(this.element).css("width", "");
-        $(this.element).css("height", "");
-        this.context.publish(EVENTS.VIEWER_RESIZE,
-            {config_id: this.config_id});
+        $(this.element).attr("init_top", $(this.element).position().top);
+        $(this.element).attr("init_left", $(this.element).position().left);
     }
 
     destroyResizable() {

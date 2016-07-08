@@ -30,15 +30,16 @@
       <custom-thumb-slider class="block100 height100 block"></custom-thumb-slider>
   </div>
 
-  <div id="center" class="${context.show_regions ? 'block80' : 'block90'} height95 block">
+  <div id="center" class="${context.show_regions ? 'block80' : 'block90'} height95 block"
+    style="position: relative; padding: 2px">
       <div name="frame" if.bind="context.useMDI" tabindex="-1"
         repeat.for="[id, conf] of context.image_configs"
-          focus.delegate="selectImage(id)"
-          style="position: relative; border: solid 1px;" class="block50 height50 block">
+          style="border: solid 1px; margin:2px;" class="block49 height49 block">
           <div class="drag-handle block100 height5 block"
                 css="background-color: ${ context.selected_config === id ? 'red' : 'grey'};">
               <span>${id}</span>
               <span click.delegate="closeImage(id)" style="float: right;">[X]</span>
+              <span click.delegate="resetImage(id)" style="float: right">[Reset]</span>
           </div>
           <custom-viewer
             config_id.bind="id" class="block100 height95 block" style="position: relative;">

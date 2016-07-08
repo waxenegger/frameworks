@@ -25,6 +25,15 @@ export class Index  {
         if (conf) this.context.removeImageConfig(id, conf);
     }
 
+    resetImage(id=null) {
+        let el = $("#" + id);
+        $(el).css("width", "");
+        $(el).css("height", "");
+        $(el).css("top", "");
+        $(el).css("left", "");
+        this.context.publish(EVENTS.VIEWER_RESIZE, {config_id: id});
+    }
+
     selectImage(id=null) {
         this.config.selectConfig(id);
     }
@@ -40,8 +49,10 @@ export class Index  {
     showRegions() {
         this.context.show_regions = $("#show_regions").prop("checked");
 
-        for (let [id,conf] of this.context.image_configs)
+        for (let [id,conf] of this.context.image_configs) {
             conf.image_info.show_regions = this.context.show_regions;
+            if (this.context.useMDI) this.resetImage(id);
+        }
 
         this.context.publish(EVENTS.SHOW_REGIONS, this.context.show_regions);
     }

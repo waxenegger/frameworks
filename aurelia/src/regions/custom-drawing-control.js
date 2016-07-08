@@ -11,10 +11,10 @@ export default class CustomDrawingControl extends EventSubscriber {
     sub_list = [
         [EVENTS.RESET_COMPONENT, (params = {}) => this.image_info = null],
         [EVENTS.SELECTED_CONFIG, (params = {}) => {
-            if (this.context.getSelectedImageConfig() === null);
+            if (this.context.getSelectedImageConfig() === null) return;
             this.image_info = this.context.getSelectedImageConfig().image_info}],
         [EVENTS.SHOW_REGIONS, (params = {}) => {
-            if (this.context.getSelectedImageConfig() === null);
+            if (this.context.getSelectedImageConfig() === null) return;
             this.image_info = this.context.getSelectedImageConfig().image_info;}]];
 
     constructor(context, element) {

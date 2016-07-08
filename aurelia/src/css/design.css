@@ -18,6 +18,10 @@
     height: 50%;
 }
 
+.height49 {
+    height: 49%;
+}
+
 .height95 {
     height: 95%;
 }
@@ -85,6 +89,11 @@
 
 .block50 {
     width: 50%;
+    display: block;
+}
+
+.block49 {
+    width: 49%;
     display: block;
 }
 
