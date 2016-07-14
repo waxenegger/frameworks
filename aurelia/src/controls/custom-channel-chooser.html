@@ -1,0 +1,9 @@
+<template>
+
+<label repeat.for="channel of image_info.channels">
+    <input type="checkbox" model.bind="channel" style="margin: 0px"
+        checked.bind="channel.active" change.delegate="onChange($index)"/>
+    ${channel.label}
+</label>
+
+</template>

@@ -13,13 +13,16 @@ export default class DragAndSizable {
 
     bind() {
         $(this.element).on("mousedown",
-            () => {this.context.selectConfig(this.config_id);
-                    $("div [name='frame']").css("z-index", 100);
-                    $(this.element).css("z-index", 1000);});
+            () => {this.context.selectConfig(this.config_id);this.focusOnMe()});
     }
 
     unbind() {
         $(this.element).off("mousedown");
+    }
+
+    focusOnMe() {
+        $("div [name='frame']").css("z-index", 100);
+        $(this.element).css("z-index", 1000);
     }
 
     createResizable() {

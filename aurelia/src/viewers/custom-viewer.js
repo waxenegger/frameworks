@@ -70,9 +70,10 @@ export default class CustomViewer extends EventSubscriber {
             this.dragizable =
                 new DragAndSizable
                     (this.context, this.config_id);
-                this.dragizable.bind();
-                this.dragizable.createDraggable();
-                this.dragizable.createResizable();
+            this.dragizable.bind();
+            this.dragizable.createDraggable();
+            this.dragizable.createResizable();
+            this.dragizable.focusOnMe();
         }
     }
 

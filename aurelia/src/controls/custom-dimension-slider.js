@@ -7,6 +7,7 @@ import {slider} from 'jquery-ui';
 @customElement('custom-dimension-slider')
 @inject(AppContext, Element)
 export default class CustomDimensionSlider extends EventSubscriber {
+    image_info = null;
     @bindable config_id = null;
     @bindable dim = 't';
     sub_list = [[EVENTS.RESET_COMPONENT, (params = {}) => {

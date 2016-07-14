@@ -35,7 +35,7 @@ export class Index  {
     }
 
     selectImage(id=null) {
-        this.config.selectConfig(id);
+        this.context.selectConfig(id);
     }
 
     useMDIMode() {
