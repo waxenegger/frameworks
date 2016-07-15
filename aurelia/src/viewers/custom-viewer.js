@@ -17,6 +17,10 @@ export default class CustomViewer extends EventSubscriber {
         [EVENTS.UPDATE_COMPONENT, (params={}) => {
             if (params.config_id !== this.config_id) return;
             this.forceUpdate();}],
+        [EVENTS.IMAGE_INTERACTION, (params={}) => {
+            if (this.context.selected_config === this.config_id) return;
+            // TODO: implement listen to list / lock to dimension
+            console.info("" + this.config_id + "=> " + params.config_id);}],
         [EVENTS.SHOW_REGIONS, (flag) => {
             this.showRegions(flag);this.viewer.redraw();}],
         [EVENTS.MODIFY_REGIONS, (params={}) => {
@@ -51,7 +55,7 @@ export default class CustomViewer extends EventSubscriber {
     }
 
     bind() {
-        if (this.context.useMDI) this.element.parentNode.id = this.config_id;
+        this.element.parentNode.id = this.config_id;
         this.container = 'ol3_viewer_' + this.config_id;
         this.image_config = this.context.getImageConfig(this.config_id);
 

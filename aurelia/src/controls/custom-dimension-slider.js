@@ -27,14 +27,14 @@ export default class CustomDimensionSlider extends EventSubscriber {
     }
 
     bind() {
-        this.elSelector =
-            "[au-target-id=" + $(this.element).attr("au-target-id") +
-            "] div[name='dim']";
+        this.elSelector = "#" + this.config_id +
+            " [dim='" + this.dim + "']" + " [name='dim']";
         this.subscribe();
     }
 
     attached() {
-        $(this.elSelector).addClass(this.dim === 'z' ? "height100" : "");
+        if (this.dim === 'z')
+            $(this.elSelector).addClass("height100");
     }
 
     detached() {

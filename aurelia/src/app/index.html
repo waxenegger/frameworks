@@ -49,11 +49,11 @@
             config_id.bind="id" class="block100 height95 block" style="position: relative;">
           </custom-viewer>
       </div>
-      <custom-viewer if.bind="!context.useMDI"
-        repeat.for="[id, conf] of context.image_configs"
-        config_id.bind="id" class="block100 height100 block" style="position: relative;">
-      </custom-viewer>
-
+      <div name="frame" if.bind="!context.useMDI"
+        repeat.for="[id, conf] of context.image_configs" class="block100 height100 block">
+          <custom-viewer config_id.bind="id" class="block100 height100 block" style="position: relative;">
+          </custom-viewer>
+      </div>
   </div>
 
   <div id="right_panel" class="${context.show_regions ? 'block10' : 'block0'} height95 block">
