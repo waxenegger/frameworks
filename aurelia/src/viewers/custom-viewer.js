@@ -16,11 +16,13 @@ export default class CustomViewer extends EventSubscriber {
     sub_list = [
         [EVENTS.UPDATE_COMPONENT, (params={}) => {
             if (params.config_id !== this.config_id) return;
-            this.forceUpdate();}],
+            this.forceUpdate(); this.viewer.redraw();}],
         [EVENTS.IMAGE_INTERACTION, (params={}) => {
-            if (this.context.selected_config === this.config_id) return;
+            if (this.context.selected_config === this.config_id ||
+                !this.image_config.isLockedToImageConfig(params.config_id)) return;
             // TODO: implement listen to list / lock to dimension
-            console.info("" + this.config_id + "=> " + params.config_id);}],
+            console.info("" + this.config_id + " received from " + params.config_id);
+            console.info(params);}],
         [EVENTS.SHOW_REGIONS, (flag) => {
             this.showRegions(flag);this.viewer.redraw();}],
         [EVENTS.MODIFY_REGIONS, (params={}) => {

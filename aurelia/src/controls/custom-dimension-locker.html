@@ -1,0 +1,13 @@
+<template>
+
+    <div if.bind="context.image_configs.size > 1">
+        <select value="${config_id}" change.delegate="lockConfig($event.target.value)">
+            <option value.bind="id" repeat.for="[id, conf] of context.image_configs">
+                ${id === config_id ? "myself" : id}</option>
+        </select>
+        <select value="all" change.delegate="lockDimension($event.target.value)">
+            <option repeat.for="[d, val] of lockable_dimensions"
+                value.bind="d" >${val}</option>
+        </select>
+    </div>
+</template>

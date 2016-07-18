@@ -2,7 +2,6 @@ import {inject} from 'aurelia-framework';
 import AppContext from '../app/context';
 import {EVENTS, EventSubscriber} from '../events/events';
 import {customElement, bindable} from 'aurelia-framework';
-import {slider} from 'jquery-ui';
 
 @customElement('custom-channel-chooser')
 @inject(AppContext, Element)

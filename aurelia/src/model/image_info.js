@@ -4,6 +4,7 @@ import Misc from '../utils/misc';
 
 @noView
 export default class ImageInfo {
+    ready = false;
     dimensions = {t: 0, max_t : 1,z: 0, max_z : 1};
     channels = null;
     tiled = false;
@@ -52,8 +53,10 @@ export default class ImageInfo {
                     EVENTS.UPDATE_COMPONENT,
                         {config_id: this.config_id,
                         dataset_id: this.dataset_id});
+                this.ready = true;
             },
             error : (error) => {
+                this.ready = false;
                 this.context.publish(EVENTS.RESET_COMPONENT,
                     {config_id: this.config_id,
                     dataset_id: this.dataset_id});

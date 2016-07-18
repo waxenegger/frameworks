@@ -8,7 +8,7 @@ export default class AppContext {
     image_configs = new Map();
     selected_config = null;
     show_regions = false;
-    useMDI = false;
+    useMDI = true;
 
     constructor(eventbus = null, initial_image_id=null, server="") {
         if (typeof eventbus instanceof EventAggregator)

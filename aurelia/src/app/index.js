@@ -29,8 +29,8 @@ export class Index  {
         let el = $("#" + id);
         $(el).css("width", "");
         $(el).css("height", "");
-        $(el).css("top", "");
-        $(el).css("left", "");
+        //$(el).css("top", "");
+        //$(el).css("left", "");
         this.context.publish(EVENTS.VIEWER_RESIZE, {config_id: id});
     }
 

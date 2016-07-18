@@ -1,11 +1,11 @@
 import {inject} from 'aurelia-framework';
 import AppContext from '../app/context';
 import {EVENTS, EventSubscriber} from '../events/events';
-import {customElement, bindable} from 'aurelia-framework';
+import {customElement, bindable, BindingEngine} from 'aurelia-framework';
 import {slider} from 'jquery-ui';
 
 @customElement('custom-dimension-slider')
-@inject(AppContext, Element)
+@inject(AppContext, Element, BindingEngine)
 export default class CustomDimensionSlider extends EventSubscriber {
     image_info = null;
     @bindable config_id = null;
@@ -17,12 +17,14 @@ export default class CustomDimensionSlider extends EventSubscriber {
         if (params.config_id !== this.config_id) return;
         this.image_info =
             this.context.getImageConfig(this.config_id).image_info;
+        this.registerObserver();
         this.forceUpdate() }]];
 
-    constructor(context, element) {
+    constructor(context, element, bindingEngine) {
         super(context.eventbus);
         this.context = context;
         this.element = element;
+        this.bindingEngine = bindingEngine;
         this.elSelector = null;
     }
 
@@ -54,15 +56,32 @@ export default class CustomDimensionSlider extends EventSubscriber {
         $(this.element).css('visibility', 'hidden');
     }
 
-    onChange(value) {
+    unregisterObserver() {
+        if (this.observer) {
+            this.observer.dispose();
+            this.observer = null;
+        }
+    }
+
+    registerObserver() {
+        this.unregisterObserver();
+        this.observer =
+            this.bindingEngine.propertyObserver(
+                this.image_info.dimensions, this.dim)
+                    .subscribe(
+                        (newValue, oldValue) => this.onChange(newValue, false));
+    }
+
+    onChange(value, slider_interaction) {
         if (value === this.image_info.dimensions[this.dim]) return;
 
         this.image_info.dimensions[this.dim] = parseInt(value);
-        this.context.publish(
-            EVENTS.DIMENSION_CHANGE,
-            {config_id: this.config_id,
-                dim: this.dim,
-                value: [this.image_info.dimensions[this.dim]]});
+        if (slider_interaction)
+            this.context.publish(
+                EVENTS.DIMENSION_CHANGE,
+                {config_id: this.config_id,
+                    dim: this.dim,
+                    value: [this.image_info.dimensions[this.dim]]});
     }
 
     forceUpdate() {
@@ -74,13 +93,15 @@ export default class CustomDimensionSlider extends EventSubscriber {
             orientation: this.dim === 'z' ? "vertical" : "horizontal",
             min: 0, max: this.image_info.dimensions['max_' + this.dim] - 1 ,
             step: 1, value: this.image_info.dimensions[this.dim],
-            change: (event, ui) => this.onChange(ui.value)
+            change: (event, ui) => this.onChange(ui.value,
+                event.originalEvent ? true : false)
         });
         this.show();
     }
 
     unbind() {
         this.unsubscribe()
+        this.unregisterObserver();
         this.image_info = null;
     }
 }
