@@ -1,0 +1,30 @@
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  text-transform: none;
+}
+
+.reveal h1 {
+  font-size: 96px;
+}
+
+.reveal p,
+.reveal pre {
+  margin-top: 2em;
+  margin-bottom: 2em;
+  line-height: 1.5;
+}
+
+.reveal li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+.reveal section img {
+  background: rgba(0, 0, 0, 0);
+  box-shadow: none;
+  border: none;
+}

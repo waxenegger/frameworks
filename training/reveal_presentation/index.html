@@ -1,0 +1,314 @@
+<!doctype html>
+
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title></title>
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="reveal-js/css/reveal.min.css">
+        <link rel="stylesheet" href="reveal-js/css/theme/default.css" id="theme">
+
+        <!-- OME presentation overrides of the default theme -->
+        <style>
+            .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+              text-transform: none;
+            }
+            .reveal h2 {
+                font-size: 60px;
+            }
+            .ome_theme {
+                background-image: url("images/ome-icon-opacity.png");
+                background-color: #f2f6f9;
+                background-repeat: no-repeat;
+                background-position: right -270px top -120px;
+            }
+            .reveal {
+                text-transform: none;   !important
+            }
+            .reveal section img {
+                border-width:0;
+                border-color: white;
+            }
+            .img_panel {
+                width: 150px;
+            }
+            .nobullet li {
+                list-style: none;
+            }
+            .smaller li {
+                font-size: 80%;
+            }
+            .reveal table {
+                width: 100%;
+            }
+            .reveal .roll:hover {
+                font-size: 90%;
+            }
+            .reveal .roll {
+                font-size: 100%;
+            }
+            .reveal table tbody td {
+                font-size: 80%;
+            }
+            .reveal table tbody tr td:first-child {
+                font-size: 100%;
+                border-right: 1px solid black;
+            }
+            .reveal table tbody tr td {
+                border-bottom: 1px dashed gray;
+            }
+            .reveal table thead tr th:first-child {
+                border-right: 1px solid black;
+            }
+            .reveal table thead tr th {
+                border-bottom: 1px solid black;
+            }
+            .reveal table th, .reveal table td  {
+                text-align: center;
+            }
+            .rot90 {
+                -webkit-transform: rotate(90deg);
+                transform: rotate(90deg);
+            }
+        </style>
+
+        <!-- For syntax highlighting -->
+        <link rel="stylesheet" href="reveal-js/lib/css/zenburn.css">
+
+        <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+        <script>
+            document.write( '<link rel="stylesheet" href="reveal-js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+    </head>
+
+    <body class="ome_theme">
+        <div class="reveal">
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+
+                <!-- talk outline -->
+                <section>
+                    <h2>Web Apps Review</h2>
+                    <br/>
+                    <ul>
+                        <li>Environment/Setup</li>
+                        <li>'Best Practices/Design'</li>
+                        <li>Figure vs. IViewer</li>
+                        <li>Example Figure</li>
+                        <li>Example IViewer</li>
+                        <li>Q & A</li>
+                    </ul>
+                </section>
+
+                <!-- app environment -->
+                <section>
+                    <h4>Environment</h4>
+                    <img src="images/app_environment.png"/>
+                </section>
+
+                <!-- app setup - dirs -->
+                <section>
+                    <h3>'Minimal' Setup – directories</h3>
+                    <br/>
+                    <ul>
+                        <li>app/static/app/app.js</li>
+                        <li>app/templates/app/index.html</li>
+                    </ul>
+                    <br/></br/>
+                    <img style="width: 500px" src="images/figure_dirs.png"/>
+                </section>
+
+                <!-- app setup - static/app -->
+                <section>
+                    <h3><i>static/app</i> – contents?</h3>
+                    <br/>
+                    <div style="float: left;">
+                        <br/>
+                        <ul>
+                            <li>JS</li>
+                            <li>CSS</li>
+                            <li>Images</li>
+                            <li>Fonts</li>
+                            <li>Third Party Resources</li>
+                        </ul>
+                    </div>
+                    <div style="float: right;">
+                        <img style="width: 500px" src="images/iviewer_dirs.png"/>
+                    </div>
+                </section>
+
+                <!-- app setup - static/templates/index.html -->
+                <section>
+                    <h2><i>app/templates/app/index.html</i></h2>
+                    <br/>
+                    <pre style="box-shadow: none;">
+                        <code style="max-height: 450px" class="xml">
+&lt;html&gt;
+    &lt;head&gt;
+      &lt;link rel="stylesheet" type="text/css"
+              href=" {% static 'app_directoryr/css/app.css?version=1.1' %}" /&gt;
+
+      &lt;script type="text/javascript"
+              src="{% static 'app_directory/app.js?version=1.1' %}"&gt;
+      &lt;/script&gt;
+
+      &lt;script type="text/javascript"&gt;
+              // optionally set parameters for app
+              window.SOME_APP_PARAM = …;
+      &lt;/script&gt;
+  &lt;/head&gt;
+   …
+&lt;/html&gt;
+                        </code>
+                    </pre>
+                </section>
+
+                <!-- app setup - static/templates/index.html iviewer-->
+                <section>
+                    <h3><i>static/templates/index.html</i> – iviewer</h3>
+                    <br/>
+                    <img src="images/iviewer_index.png"/>
+                </section>
+
+                <!-- best practices -->
+                <section>
+                    <h3>"Best Practices"</h3>
+                    <ul class="smaller">
+                        <li>Check in files unaffected by build in their
+                            respective target directories, e.g. index.html</li>
+                        <br/>
+                        <li>Build the rest and deploy into target dirs</li>
+                        <br/>
+                        <li>Optimize for both development and production</li>
+                        <ul>
+                            <li>Add suffix to resources to indicate version and avoid caching</li>
+                            <li>debugging/quicker builds for dev version</li>
+                            <li>leaner prod version</li>
+                            <ul>
+                                <li>fewer requests for immediately needed resources</li>
+                                <li>hosted libraries, e.g. jquery or bootstrap?</li>
+                                <li>glypicons vs. images?</li>
+                                <li>splitting up of code if framework,
+                                    loader and setup allows for dynamic
+                                    (down)loading and execution
+                                </li>
+                            </ul>
+                        </ul>
+                    </ul>
+                </section>
+
+                <!-- considerations -->
+                <section>
+                    <h3>Considerations</h3>
+                        Omero Web resources (Api, Gateway) vs.
+                    <br/>
+                        Plugin resources (views.py) vs.
+                    <br/>
+                        Server-side extentions (Blitz Gateway)
+                    <br/><br/>
+
+                    <ul class="smaller">
+                        <li>Code Reuse</li>
+                        <li>Stability/Breaking Potential across Versions</li>
+                        <li>Missing Functionality</li>
+                        <li>Release/Bugfix Cycles</li>
+                        <li>Cross origin implications (jsonp and cors)</li>
+                    </ul>
+                </section>
+
+                <!-- figure vs. iviewer -->
+                <section>
+                    <h3>Apps: Figure, IViewer</h3>
+                    <br/><br/>
+                    <table class="center table-with-border">
+                        <thead><th>&nbsp;</th><th>figure</th><th>iviewer</th></thead>
+                        <tbody>
+                            <tr>
+                                <td>build</td>
+                                <td>grunt</td>
+                                <td>webpack (also loader)</td>
+                            </tr>
+                            <tr>
+                                <td>js</td>
+                                <td>jquery, backbone, underscore, rafael</td>
+                                <td>jquery, aurelia, openlayers</td>
+                            </tr>
+                            <tr>
+                                <td>css</td>
+                                <td>bootstrap</td>
+                                <td>bootstrap</td>
+                            </tr>
+                            <tr>
+                                <td>git</td>
+                                <td>
+                                    <a href="https://github.com/ome/omero-figure">
+                                    https://github.com/ome/omero-figure</a>
+                                </td>
+                                <td>
+                                    <a href="https://github.com/ome/omero-iviewer">
+                                    https://github.com/ome/omero-iviewer</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- figure example -->
+                <section>
+                    <h2>Figure Example</h2>
+                    <br/>
+                    <pre style="box-shadow: none;">
+                        <code class="javascript">
+                            // TODO: use code from PR
+                        </code>
+                    </pre>
+                </section>
+                <!-- figure example -->
+
+                <section>
+                    <h2>IViewer Example</h2>
+                    <br/>
+                    <pre style="box-shadow: none;">
+                        <code class="javascript">
+                            // TODO: use code from PR
+                        </code>
+                    </pre>
+                </section>
+
+        <script src="reveal-js/lib/js/head.min.js"></script>
+        <script src="reveal-js/js/reveal.min.js"></script>
+
+        <script>
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                theme: 'sky', //Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    // { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    // { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    // { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'reveal-js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    // { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    // { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+                    // { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+                    // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+                ]
+            });
+        </script>
+
+    </body>
+</html>
