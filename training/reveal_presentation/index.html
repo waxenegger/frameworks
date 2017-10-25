@@ -274,12 +274,18 @@
                 <section>
                     <h2>IViewer Example - adding tab</h2>
                     <br/>
-                    <div style="float: left;">
-                        <img src="images/annotations_folder.png"/>
+                    <div style="float: left;width: 300px">
+                        <img src="images/iviewer-annotations-tab.png"/>
                     </div>
-                    <div style="float: right;">
+                    <div style="float: right;" class="smaller">
                         <br/><br/>
                         <ul>
+                            <li>
+                                <a href="https://github.com/ome/omero-iviewer/pull/131">
+                                    https://github.com/ome/omero-iviewer/pull/131
+                                </a>
+                            </li>
+                            <li>plugin code (optional)</li>
                             <li>data object (optional)</li>
                             <li>template and view logic</li>
                             <li>css tweaking</li>
@@ -287,14 +293,323 @@
                     </div>
                 </section>
 
-                <section>
-                    <h2>IViewer Example</h2>
-                    <br/>
-                    <pre style="box-shadow: none;">
-                        <code class="javascript">
-                            // TODO: use code from PR
-                        </code>
-                    </pre>
+                <!-- iviewer example - plugin -->
+                <section style="width:1100px;">
+                    <h4>plugin - urls.py, views.py</h4>
+                    <div style="float: left;margin-top: 150px;width:200px">
+                        <img src="images/plugin_changes.png"/>
+                    </div>
+                    <div style="float: left;width: 800px;">
+                        <pre style="box-shadow: none;height: 200px">
+                            <code style="max-height: 150px" class="python">
+urlpatterns = patterns(
+    'django.views.generic.simple',
+            ...
+    url(r'^get_annotations/?$', views.get_annotations,
+        name='omero_iviewer_get_annotations'))
+                            </code>
+                        </pre>
+                        <pre style="box-shadow: none;">
+                            <code style="max-height: 350px" class="python">
+@login_required()
+def get_annotations(request, conn=None, **kwargs):
+    # get mandatory param image id
+    image_id = request.GET.get("image", None)
+    if image_id is None:
+        return JsonResponse(
+            {"error": "Mandatory params are: image,x,y,c, z and t"})
+
+    # retrieve image object
+    img = conn.getObject("Image", image_id, opts=conn.SERVICE_OPTS)
+    if img is None:
+        return JsonResponse({"error": "Image not Found"}, status=404)
+
+    # iterate over annotations and marshal them
+    annotations = []
+    for ann in img.listAnnotations():
+        enc = omero_marshal.get_encoder(ann.OMERO_TYPE)
+        if enc is None:
+            enc = omero_marshal.get_encoder(omero.model.Annotation)
+        ann = enc.encode(ann)
+        if ann is not None:
+            annotations.append(ann)
+
+    return JsonResponse({"annotations": annotations})
+                            </code>
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- iviewer example - model-->
+                <section style="width: 1200px">
+                    <h4>'data object' - image_annotations.js</h4>
+                    <div style="float: left;margin-top: 150px;width:250px">
+                        <img src="images/model_changes.png"/>
+                    </div>
+                    <div style="float: left;width: 800px">
+                        <pre style="box-shadow: none;margin: 5px;">
+                            <code style="min-height: 600px"
+                                  class="javascript">
+import {noView} from 'aurelia-framework';
+import Misc from '../utils/misc';
+import {IVIEWER, TABS} from '../utils/constants';
+
+/**
+* Contains the annotations linked to an image
+*/
+@noView
+export default class ImageAnnotations {
+  /**
+   * the app context
+   * @memberof ImageAnnotations
+   * @type {Context}
+   */
+  context = null;
+
+  /**
+   * the image id
+   * @memberof ImageAnnotations
+   * @type {number}
+   */
+  image_id = null;
+
+  /**
+   * a flag that signals whether we have successfully
+   * executed the annotations request
+   * @memberof ImageAnnotations
+   * @type {boolean}
+   */
+  ready = false;
+
+  /**
+   * the image id
+   * @memberof ImageAnnotations
+   * @type {number}
+   */
+  annotations = [];
+
+  /**
+   * @constructor
+   * @param {Context} context the application context
+   * @param {number} image_id the image id to be queried
+   */
+  constructor(context, image_id) {
+      this.context = context;
+      this.image_id = image_id;
+
+      if (this.context.selected_tab === TABS.ANNOTATIONS)
+          this.requestData(true);
+  }
+
+  /**
+   * Requests the annotations for the image
+   * @param {boolean} force if true we force a request even though we have
+   *                        done so before
+   * @memberof ImageAnnotations
+   */
+  requestData(force = false) {
+      if (this.ready && !force) return;
+      this.annotations.splice(0, this.annotations.length);
+      $.ajax({
+          url :
+              this.context.server + this.context.getPrefixedURI(IVIEWER) +
+              "/get_annotations/?image=" + this.image_id,
+          success : (response) => {
+              if (typeof response === 'object' &&
+                  Misc.isArray(response.annotations)) {
+                      // extract type without schema prefix
+                      for (let a in response.annotations) {
+                          let ann = response.annotations[a];
+                          let type = ann['@type'];
+                          ann['type'] = type.substring(type.lastIndexOf("#")+1);
+                          delete ann['@type'];
+                          this.annotations.push(ann);
+                      }
+                  }
+              this.ready = true;
+          },
+          error : (error) => {
+              this.ready = true;
+              console.error(error);
+          }
+      });
+  }
+}
+                            </code>
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- iviewer example - view-->
+                <section style="width: 1200px">
+                    <h4>'view object' code - annotations.js</h4>
+                    <div style="float: left;margin-top: 150px;width:250px">
+                        <img src="images/annotations_changes.png"/>
+                    </div>
+                    <div style="float: left;width: 800px">
+                        <pre style="box-shadow: none;margin: 5px;">
+                            <code style="min-height: 600px"
+                                  class="javascript">
+// js
+import Context from '../app/context';
+
+import {inject, customElement, bindable, BindingEngine} from 'aurelia-framework';
+
+@customElement('annotations')
+@inject(Context, BindingEngine)
+export class Annotations {
+  /**
+   * a reference to the image annotations  (bound in template)
+   * @memberof Annotations
+   * @type {ImageAnnotations}
+   */
+  @bindable image_annotations = null;
+
+  /**
+   * listens to image annotations changes
+   * @memberof Annotations
+   * @type {Object}
+   */
+  image_annotations_changes = null;
+
+  /**
+   * @constructor
+   * @param {Context} context the application context (injected)
+   * @param {BindingEngine} bindingEngine the BindingEngine (injected)
+   */
+  constructor(context, bindingEngine) {
+      this.context = context;
+      this.bindingEngine = bindingEngine;
+  }
+
+  /**
+   * Overridden aurelia lifecycle method:
+   * called whenever the view is bound within aurelia
+   * in other words an 'init' hook that happens before 'attached'
+   *
+   * @memberof Annotations
+   */
+  bind() {
+      // listen for image annotation changes
+      this.image_annotations_changes =
+          this.bindingEngine.collectionObserver(
+              this.image_annotations.annotations).subscribe(
+                  (newValue, oldValue) => {
+          // show how observer works by listening to annotations changes
+          console.info(newValue);
+      });
+  }
+
+  /**
+   * Overridden aurelia lifecycle method:
+   * called whenever the view is unbound within aurelia
+   * in other words a 'destruction' hook that happens after 'detached'
+   *
+   * @memberof Annotations
+   */
+  unbind() {
+      // get rid of observers
+      if (this.image_annotations_changes) {
+          this.image_annotations_changes.dispose();
+      }
+  }
+}
+                            </code>
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- iviewer example - template-->
+                <section style="width: 1200px">
+                    <h4>templates - annotations.html, right-hand-panel.html</h4>
+                    <div style="float: left;margin-top: 150px;width:300px">
+                        <img src="images/annotations_changes.png"/>
+                    </div>
+                    <div style="float: left;width: 800px">
+                        <pre style="box-shadow: none;margin: 5px;">
+                            <code style="max-height: 250px"
+                                  class="xml">
+&lt;template&gt;
+  &lt;ul show.bind="image_annotations.ready"&gt;
+      &lt;li repeat.for="ann of image_annotations.annotations"&gt;
+          ${ann.type}
+          &lt;ul&gt;
+              &lt;li if.bind="ann.Value">Value: ${ann.Value}&lt;/li&gt;
+              &lt;li if.bind="ann.Description">Desc: ${ann.Description}&lt;/li&gt;
+              &lt;li if.bind="ann.Namespace">NS: ${ann.Namespace}&lt;/li&gt;
+          &lt;ul&gt;
+      &lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;div class="disabled-color loading-text"
+       show.bind="!image_annotations.ready">
+      Loading Annotations ...
+   &lt;/div&gt;
+&lt;/template&gt;
+                              </code>
+                          </pre>
+                          <pre style="box-shadow: none;margin: 5px;">
+                              <code style="max-height: 250px"
+                                    class="xml">
+&lt;template>
+    &lt;require from="../settings/settings">&lt;/require>
+    &lt;require from="../regions/regions">&lt;/require>
+    &lt;require from="../info/info">&lt;/require>
+    &lt;require from="../annotations/annotations">&lt;/require>
+
+    ...
+
+    &lt;div class="tab-content regions-tabs"
+         show.bind="image_config && image_config.image_info &&
+                    !image_config.image_info.error"&gt;
+        &lt;div id="${TABS.INFO}" role="tabpanel"
+             class="tab-pane ${context.selected_tab === TABS.INFO ? 'active' : ''}"&gt;
+            &lt;info image_info.bind="image_config.image_info">&lt;/info&gt;
+        &lt;/div&gt;
+        &lt;div id="${TABS.SETTINGS}" role="tabpanel"
+             class="tab-pane ${context.selected_tab === TABS.SETTINGS ? 'active' : ''}"&gt;
+            &lt;settings image_config.bind="image_config">&lt;/settings&gt;
+        &lt;/div>
+        &lt;div id="${TABS.ROIS}" role="tabpanel"
+             class="tab-pane ${context.selected_tab === TABS.ROIS ? 'active' : ''}">
+            &lt;regions regions_info.bind="image_config.regions_info">&lt;/regions&gt;
+        &lt;/div&gt;
+        &lt;div id="${TABS.ANNOTATIONS}" role="tabpanel"
+             class="tab-pane ${context.selected_tab === TABS.ANNOTATIONS ? 'active' : ''}"&gt;
+            &lt;annotations
+                image_annotations.bind="image_config.image_annotations"&gt;
+            &lt;/annotations&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+                                </code>
+                            </pre>
+                      </div>
+                  </section>
+
+                  <!-- iviewer example - css-->
+                  <section style="width:1200px">
+                      <h4>app.css</h4>
+                      <div style="float: left;width:250px">
+                          <img src="images/css_changes.png"/>
+                      </div>
+                      <div style="float: left;width: 800px">
+                          <pre style="box-shadow: none;margin: 5px;">
+                              <code style="max-height: 250px"
+                                    class="css">
+        ...
+#panel-tabs li a {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+        ...
+annotations ul {
+    padding-left: 10px;
+    list-style-type: none;
+}
+                                </code>
+                            </pre>
+                    </div>
                 </section>
 
                 <!-- iviewer - project setup -->
