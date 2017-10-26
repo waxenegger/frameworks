@@ -103,13 +103,14 @@
                         <li>Figure vs. IViewer</li>
                         <li>Example Figure</li>
                         <li>Example IViewer</li>
+                        <li>IViewer Details</li>
                         <li>Q & A</li>
                     </ul>
                 </section>
 
                 <!-- app environment -->
                 <section>
-                    <h4>Environment</h4>
+                    <h3>Environment</h3>
                     <img src="images/app_environment.png"/>
                 </section>
 
@@ -207,6 +208,7 @@
                 <!-- considerations -->
                 <section>
                     <h3>Considerations</h3>
+                    <br/>
                         Omero Web resources (Api, Gateway) vs.
                     <br/>
                         Plugin resources (views.py) vs.
@@ -259,25 +261,329 @@
                     </table>
                 </section>
 
-                <!-- figure example -->
+                <!-- both examples -->
                 <section>
-                    <h2>Figure Example</h2>
+                    <h2>Figure & IViewer Examples - Pre-requisites</h2>
+                    <ul>
+                        <li>Setup Omero Server & Web</li>
+                        <li>Check out respective Project from git</li>
+                        <li>add plugins (opt: deps) to PYTHONPATH</li>
+                        <li>run build/deploy</li>
+                    </ul>
+                    <br/><br/>
+                    e.g. <i>.bashrc (simple export would suffice)</i>
                     <br/>
                     <pre style="box-shadow: none;">
-                        <code class="javascript">
-                            // TODO: use code from PR
+                        <code class="bash">
+TO_BE_ADDED_TO_PYTHONPATH=("/opt/workspace/omero-marshal" "/opt/workspace/omero-iviewer/plugin" "/opt/workspace/omero-figure")
+for p in ${TO_BE_ADDED_TO_PYTHONPATH[@]}
+do
+  COUNT=`echo $PYTHONPATH | grep $p | wc -c`
+  if [ $COUNT -eq 0 ]; then
+    export PYTHONPATH=$PYTHONPATH:$p
+  fi
+done
                         </code>
                     </pre>
                 </section>
 
-                <!-- iviewer example -->
+                <!-- figure example -->
+                <section style="width: 1200px">
+                    <h2>Figure Example - adding tab</h2>
+                    <br/>
+                    <div style="float: left;width: 500px">
+                        <img src="images/figure-annotations-tab.png"/>
+                    </div>
+                    <div style="float: left;width: 700px" class="smaller">
+                        <br/><br/>
+                        <ul>
+                            <li>
+                                <a href="https://github.com/waxenegger/omero-figure/commit/771c958696bba70a8353b50c8aaa57a8a4b8cd9b">
+                                    https://github.com/waxenegger/omero-figure
+                                </a>
+                            </li>
+                            <li>Model Code</li>
+                            <li>View Code</li>
+                            <li>Template Code</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- figure - project setup -->
                 <section>
+                    <h3>Figure Setup</h3>
+                    <img style="height: 600px" src="images/figure_dir_setup.png"/>
+                </section>
+
+                <!-- figure example - plugin -->
+                <section style="width:1100px;">
+                    <h3>Plugin - urls.py, views.py</h3>
+                    <div style="float: left;margin-top: 150px;width:200px">
+                        <img src="images/figure_plugin_changes.png"/>
+                    </div>
+                    <div style="float: left;width: 800px;">
+                        <pre style="box-shadow: none;height: 200px">
+                            <code style="max-height: 150px" class="python">
+urlpatterns = patterns(
+
+    'django.views.generic.simple',
+            ...
+    url(r'^get_annotations/?$', views.get_annotations,
+        name='figure_get_annotations'))
+                            </code>
+                        </pre>
+                        <pre style="box-shadow: none;">
+                            <code style="max-height: 350px" class="python">
+@login_required()
+def get_annotations(request, conn=None, **kwargs):
+    # get mandatory param image id
+    image_id = request.GET.get("image", None)
+    if image_id is None:
+        return JsonResponse(
+            {"error": "The image id is a mandatory parameter"})
+
+    # retrieve image object
+    img = conn.getObject("Image", image_id, opts=conn.SERVICE_OPTS)
+    if img is None:
+        return JsonResponse({"error": "Image not Found"}, status=404)
+
+    # iterate over annotations and marshal them
+    annotations = []
+    for ann in img.listAnnotations():
+        enc = omero_marshal.get_encoder(ann.OMERO_TYPE)
+        if enc is None:
+            enc = omero_marshal.get_encoder(omero.model.Annotation)
+        ann = enc.encode(ann)
+        if ann is not None:
+            annotations.append(ann)
+
+    return JsonResponse({"annotations": annotations})
+                            </code>
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- figure example - model-->
+                <section style="width: 1200px">
+                    <h3>Model - annotations_model.js</h3>
+                    <div style="float: left;margin-top: 150px;width:250px">
+                        <img src="images/figure_model_changes.png"/>
+                    </div>
+                    <div style="float: left;width: 800px">
+                        <pre style="box-shadow: none;margin: 5px;">
+                            <code style="min-height: 600px"
+                                  class="javascript">
+  var AnnotationsModel = Backbone.Model.extend({
+      parse: function(annotation) {
+          var type = annotation['@type'];
+          annotation.type = type.substring(type.lastIndexOf('#')+1);
+          return annotation;
+      }
+  });
+
+  var AnnotationsList = Backbone.Collection.extend({
+      model: AnnotationsModel,
+
+      parse: function (response) {
+          if (typeof response === 'object' && response !== null &&
+              Array.isArray(response.annotations)) {
+                  for (var a in response.annotations) {
+                      this.push(
+                          new AnnotationsModel(
+                              response.annotations[a], {parse: true}));
+                  }
+          }
+
+          return this.models;
+      }
+  });
+                            </code>
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- figure example - view-->
+                <section style="width: 1200px">
+                    <h3>View - right_panel_view.js</h3>
+                    <div style="float: left;margin-top: 150px;width:250px">
+                        <img src="images/figure_view_changes.png"/>
+                    </div>
+                    <div style="float: left;width: 800px">
+                        <pre style="box-shadow: none;margin: 5px;">
+                            <code style="min-height: 600px"
+                                  class="javascript">
+// The 'Right Panel' is the floating Info, Preview etc display.
+// It listens to selection changes on the FigureModel and updates it's display
+// By creating new Sub-Views
+
+var RightPanelView = Backbone.View.extend({
+
+  initialize: function(opts) {
+      // we render on selection Changes in the model
+      this.listenTo(this.model, 'change:selection', this.render);
+
+      // this.render();
+      new LabelsPanelView({model: this.model});
+      new SliderButtonsView({model: this.model});
+      new RoisFormView({model: this.model});
+      new AnnotationsView({model: this.model});
+  },
+    ...
+// AnnotationsView
+var AnnotationsView = Backbone.View.extend({
+    model: FigureModel,
+    cache: {},
+
+    el: $("#annotationsTab"),
+
+    template: JST["src/templates/annotations_template.html"],
+
+    initialize: function(opt) {
+        this.render = _.debounce(this.render);
+        this.models = opt.models;
+        this.listenTo(this.model, 'change:selection', this.render);
+        this.render();
+    },
+
+    render: function() {
+        var selected = this.model.getSelected();
+        var message = null;
+        var ann = new AnnotationsList();
+        if (selected && selected.length > 0) {
+            if (selected.length === 1) {
+                var imgId = selected.at(0).get('imageId');
+                if (this.cache[imgId] instanceof AnnotationsList)
+                    ann = this.cache[imgId];
+                else {
+                    ann.fetch({
+                        url: BASE_WEBFIGURE_URL +
+                                'get_annotations/?image=' + imgId,
+                        success: function(data) {
+                            this.cache[imgId] = data;
+                            this.renderTemplate(null, this.cache[imgId]);
+                        }.bind(this),
+                        error: function(err) {
+                            this.renderTemplate(
+                                "Error requesting annotations", ann);
+                        }.bind(this)
+                    });
+                    return;
+                }
+            } else message = "We don't do multi selection";
+        } else message = "No Image Selected";
+        this.renderTemplate(message, ann);
+        return this;
+    },
+
+    renderTemplate: function(message, annotations) {
+        if (typeof message !== 'string') message = null;
+        var html = this.template({
+            "message": message,
+            "annotations": annotations
+        });
+        this.$el.html(html);
+    }
+});
+                            </code>
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- figure example - template-->
+                <section style="width: 1200px">
+                    <h3>Templates - index.html, annotations_template.html</h3>
+                    <div style="float: left;margin-top: 50px;width:300px">
+                        <img src="images/figure_template_changes.png"/>
+                    </div>
+                    <div style="float: left;width: 800px">
+                        <pre style="box-shadow: none;margin: 5px;">
+                            <code style="max-height: 250px"
+                                  class="xml">
+<!-- Hacked Bootstrap's modal dialog to be non-modal -->
+&lt;div class="modal-dialog non-modal-dialog draggable-dialog"&gt;
+  &lt;div class="modal-content"&gt;
+
+      &lt;ul class="nav nav-tabs" id="previewInfoTabs"&gt;
+          &lt;li&gt;&lt;a href="#infoTab"&gt;Info&lt;/a&gt;&lt;/li&gt;
+          &lt;li class="active"&gt;&lt;a href="#previewTab"&gt;Preview&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="#annotationsTab"&gt;Annotations&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="#labelsTab"&gt;Labels&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+
+      &lt;div class="tab-content"&gt;
+          &lt;div class="tab-pane" id="infoTab"&gt;&lt;/div&gt;
+          ...
+&lt;div class="tab-pane" id="annotationsTab"&gt;&lt;/div&gt;
+                              </code>
+                          </pre>
+                          <pre style="box-shadow: none;margin: 5px;">
+                              <code style="max-height: 250px"
+                                    class="xml">
+&lt;div&gt;
+    &lt;% if (message !== null) { %&gt;
+        &lt;div class="center"&gt;&lt;%= message %&gt;&lt;/div&gt;
+    &lt;% } else if (annotations.length === 0) { %&gt;
+        &lt;div class="center">No Annotations Found&lt;/div&gt;
+    &lt;% } else { %&gt;
+        &lt;ul&gt;
+    &lt;%          annotations.forEach(function(a) { %&gt;
+                    &lt;%= a.get('type') %&gt;
+                    &lt;ul&gt;
+                        &lt;% if (a.get('Value')) { %&gt;
+                            &lt;li&gt;Value: &lt;%= a.get('Value') %&gt;&lt;/li&gt;
+                        &lt;% } %&gt;
+                        &lt;% if (a.get('Description')) { %&gt;
+                            &lt;li&gt;Desc: &lt;%= a.get('Description') %&gt;&lt;/li&gt;
+                        &lt;% } %&gt;
+                        &lt;% if (a.get('Namespace')) { %&gt;
+                            &lt;li>NS: &lt;%= a.get('Namespace') %&gt;&lt;/li&gt;
+                        &lt;% } %&gt;
+                    &lt;/ul&gt;
+    &lt;%         }) %&gt;
+        &lt;/ul&gt;
+    &lt;% } %&gt;
+&lt;/div&gt;
+                                </code>
+                            </pre>
+                      </div>
+                  </section>
+
+                  <!-- figure example - build-->
+                  <section>
+                      <h3>Build & Debugging</h3>
+                          <a style="font-size: 80%"
+                          href="https://github.com/ome/omero-figure/blob/master/README.rst">
+                          https://github.com/ome/omero-figure/blob/master/README.rst</a>
+                          <pre style="box-shadow: none;margin-top: 0px;margin-bottom:0px;">
+                              <code style="max-height: 200px;"
+                                    class="bash">
+[harald@harald omero-figure]$ npm install
+    ...
+[harald@harald omero-figure]$ grunt concat
+Running "concat:js" (concat) task
+File omero_figure/static/figure/figure.js created.
+
+Done, without errors.
+[harald@harald omero-figure]$ grunt jst
+Running "jst:compile" (jst) task
+File omero_figure/static/figure/templates.js created.
+
+Done, without errors.
+[harald@harald omero-figure]$ grunt watch
+Running "watch" task
+                                  </code>
+                          </pre>
+                          <img src="images/figure_debug.png"/>
+                    </section>
+
+                <!-- iviewer example -->
+                <section style="width: 1200px">
                     <h2>IViewer Example - adding tab</h2>
                     <br/>
-                    <div style="float: left;width: 300px">
+                    <div style="float: left;width: 500px">
                         <img src="images/iviewer-annotations-tab.png"/>
                     </div>
-                    <div style="float: right;" class="smaller">
+                    <div style="float: left;width: 700px" class="smaller">
                         <br/><br/>
                         <ul>
                             <li>
@@ -293,11 +599,17 @@
                     </div>
                 </section>
 
+                <!-- iviewer - project setup -->
+                <section>
+                    <h3>IViewer Setup</h3>
+                    <img src="images/iviewer_dir_setup.png"/>
+                </section>
+
                 <!-- iviewer example - plugin -->
                 <section style="width:1100px;">
-                    <h4>plugin - urls.py, views.py</h4>
+                    <h3>Plugin - urls.py, views.py</h3>
                     <div style="float: left;margin-top: 150px;width:200px">
-                        <img src="images/plugin_changes.png"/>
+                        <img src="images/iviewer_plugin_changes.png"/>
                     </div>
                     <div style="float: left;width: 800px;">
                         <pre style="box-shadow: none;height: 200px">
@@ -317,7 +629,7 @@ def get_annotations(request, conn=None, **kwargs):
     image_id = request.GET.get("image", None)
     if image_id is None:
         return JsonResponse(
-            {"error": "Mandatory params are: image,x,y,c, z and t"})
+            {"error": "The image id is a mandatory parameter"})
 
     # retrieve image object
     img = conn.getObject("Image", image_id, opts=conn.SERVICE_OPTS)
@@ -342,9 +654,9 @@ def get_annotations(request, conn=None, **kwargs):
 
                 <!-- iviewer example - model-->
                 <section style="width: 1200px">
-                    <h4>'data object' - image_annotations.js</h4>
+                    <h3>Model - image_annotations.js</h3>
                     <div style="float: left;margin-top: 150px;width:250px">
-                        <img src="images/model_changes.png"/>
+                        <img src="images/iviewer_model_changes.png"/>
                     </div>
                     <div style="float: left;width: 800px">
                         <pre style="box-shadow: none;margin: 5px;">
@@ -442,9 +754,9 @@ export default class ImageAnnotations {
 
                 <!-- iviewer example - view-->
                 <section style="width: 1200px">
-                    <h4>'view object' code - annotations.js</h4>
+                    <h3>View - annotations.js</h3>
                     <div style="float: left;margin-top: 150px;width:250px">
-                        <img src="images/annotations_changes.png"/>
+                        <img src="images/iviewer_annotations_changes.png"/>
                     </div>
                     <div style="float: left;width: 800px">
                         <pre style="box-shadow: none;margin: 5px;">
@@ -521,9 +833,9 @@ export class Annotations {
 
                 <!-- iviewer example - template-->
                 <section style="width: 1200px">
-                    <h4>templates - annotations.html, right-hand-panel.html</h4>
+                    <h3>Templates - annotations.html, right-hand-panel.html</h3>
                     <div style="float: left;margin-top: 150px;width:300px">
-                        <img src="images/annotations_changes.png"/>
+                        <img src="images/iviewer_annotations_changes.png"/>
                     </div>
                     <div style="float: left;width: 800px">
                         <pre style="box-shadow: none;margin: 5px;">
@@ -589,9 +901,9 @@ export class Annotations {
 
                   <!-- iviewer example - css-->
                   <section style="width:1200px">
-                      <h4>app.css</h4>
+                      <h3>app.css</h3>
                       <div style="float: left;width:250px">
-                          <img src="images/css_changes.png"/>
+                          <img src="images/iviewer_css_changes.png"/>
                       </div>
                       <div style="float: left;width: 800px">
                           <pre style="box-shadow: none;margin: 5px;">
@@ -610,12 +922,6 @@ annotations ul {
                                 </code>
                             </pre>
                     </div>
-                </section>
-
-                <!-- iviewer - project setup -->
-                <section>
-                    <h4>IViewer Setup</h4>
-                    <img src="images/iviewer_dir_setup.png"/>
                 </section>
 
 
