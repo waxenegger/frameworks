@@ -156,13 +156,13 @@
       &lt;link rel="stylesheet" type="text/css"
               href=" {% static 'app_directoryr/css/app.css?version=1.1' %}" /&gt;
 
-      &lt;script type="text/javascript"
-              src="{% static 'app_directory/app.js?version=1.1' %}"&gt;
-      &lt;/script&gt;
-
       &lt;script type="text/javascript"&gt;
               // optionally set parameters for app
               window.SOME_APP_PARAM = …;
+      &lt;/script&gt;
+
+      &lt;script type="text/javascript"
+              src="{% static 'app_directory/app.js?version=1.1' %}"&gt;
       &lt;/script&gt;
   &lt;/head&gt;
    …
@@ -506,8 +506,8 @@ var AnnotationsView = Backbone.View.extend({
       &lt;ul class="nav nav-tabs" id="previewInfoTabs"&gt;
           &lt;li&gt;&lt;a href="#infoTab"&gt;Info&lt;/a&gt;&lt;/li&gt;
           &lt;li class="active"&gt;&lt;a href="#previewTab"&gt;Preview&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href="#annotationsTab"&gt;Annotations&lt;/a&gt;&lt;/li&gt;
           &lt;li&gt;&lt;a href="#labelsTab"&gt;Labels&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="#annotationsTab"&gt;Annotations&lt;/a&gt;&lt;/li&gt;
       &lt;/ul&gt;
 
       &lt;div class="tab-content"&gt;
@@ -726,7 +726,7 @@ export default class ImageAnnotations {
           url :
               this.context.server + this.context.getPrefixedURI(IVIEWER) +
               "/get_annotations/?image=" + this.image_id,
-          success : (response) => {
+          success : (response) =&gt; {
               if (typeof response === 'object' &&
                   Misc.isArray(response.annotations)) {
                       // extract type without schema prefix
@@ -740,7 +740,7 @@ export default class ImageAnnotations {
                   }
               this.ready = true;
           },
-          error : (error) => {
+          error : (error) =&gt; {
               this.ready = true;
               console.error(error);
           }
@@ -762,9 +762,7 @@ export default class ImageAnnotations {
                         <pre style="box-shadow: none;margin: 5px;">
                             <code style="min-height: 600px"
                                   class="javascript">
-// js
 import Context from '../app/context';
-
 import {inject, customElement, bindable, BindingEngine} from 'aurelia-framework';
 
 @customElement('annotations')
@@ -806,7 +804,7 @@ export class Annotations {
       this.image_annotations_changes =
           this.bindingEngine.collectionObserver(
               this.image_annotations.annotations).subscribe(
-                  (newValue, oldValue) => {
+                  (newValue, oldValue) =&gt; {
           // show how observer works by listening to annotations changes
           console.info(newValue);
       });
@@ -838,7 +836,7 @@ export class Annotations {
                         <img src="images/iviewer_annotations_changes.png"/>
                     </div>
                     <div style="float: left;width: 800px">
-                        <pre style="box-shadow: none;margin: 5px;">
+                        <pre style="box-shadow: none;margin: 5px">
                             <code style="max-height: 250px"
                                   class="xml">
 &lt;template&gt;
@@ -846,15 +844,15 @@ export class Annotations {
       &lt;li repeat.for="ann of image_annotations.annotations"&gt;
           ${ann.type}
           &lt;ul&gt;
-              &lt;li if.bind="ann.Value">Value: ${ann.Value}&lt;/li&gt;
-              &lt;li if.bind="ann.Description">Desc: ${ann.Description}&lt;/li&gt;
-              &lt;li if.bind="ann.Namespace">NS: ${ann.Namespace}&lt;/li&gt;
+              &lt;li if.bind="ann.Value"&gt;Value: ${ann.Value}&lt;/li&gt;
+              &lt;li if.bind="ann.Description"&gt;Desc: ${ann.Description}&lt;/li&gt;
+              &lt;li if.bind="ann.Namespace"&gt;NS: ${ann.Namespace}&lt;/li&gt;
           &lt;ul&gt;
       &lt;/li&gt;
   &lt;/ul&gt;
 
   &lt;div class="disabled-color loading-text"
-       show.bind="!image_annotations.ready">
+       show.bind="!image_annotations.ready"&gt;
       Loading Annotations ...
    &lt;/div&gt;
 &lt;/template&gt;
@@ -863,11 +861,11 @@ export class Annotations {
                           <pre style="box-shadow: none;margin: 5px;">
                               <code style="max-height: 250px"
                                     class="xml">
-&lt;template>
-    &lt;require from="../settings/settings">&lt;/require>
-    &lt;require from="../regions/regions">&lt;/require>
-    &lt;require from="../info/info">&lt;/require>
-    &lt;require from="../annotations/annotations">&lt;/require>
+&lt;template&gt;
+    &lt;require from="../settings/settings"&gt;&lt;/require&gt;
+    &lt;require from="../regions/regions"&gt;&lt;/require&gt;
+    &lt;require from="../info/info"&gt;&lt;/require&gt;
+    &lt;require from="../annotations/annotations"&gt;&lt;/require&gt;
 
     ...
 
@@ -876,15 +874,15 @@ export class Annotations {
                     !image_config.image_info.error"&gt;
         &lt;div id="${TABS.INFO}" role="tabpanel"
              class="tab-pane ${context.selected_tab === TABS.INFO ? 'active' : ''}"&gt;
-            &lt;info image_info.bind="image_config.image_info">&lt;/info&gt;
+            &lt;info image_info.bind="image_config.image_info"&gt;&lt;/info&gt;
         &lt;/div&gt;
         &lt;div id="${TABS.SETTINGS}" role="tabpanel"
              class="tab-pane ${context.selected_tab === TABS.SETTINGS ? 'active' : ''}"&gt;
-            &lt;settings image_config.bind="image_config">&lt;/settings&gt;
-        &lt;/div>
+            &lt;settings image_config.bind="image_config"&gt;&lt;/settings&gt;
+        &lt;/div&gt;
         &lt;div id="${TABS.ROIS}" role="tabpanel"
-             class="tab-pane ${context.selected_tab === TABS.ROIS ? 'active' : ''}">
-            &lt;regions regions_info.bind="image_config.regions_info">&lt;/regions&gt;
+             class="tab-pane ${context.selected_tab === TABS.ROIS ? 'active' : ''}"&gt;
+            &lt;regions regions_info.bind="image_config.regions_info"&gt;&lt;/regions&gt;
         &lt;/div&gt;
         &lt;div id="${TABS.ANNOTATIONS}" role="tabpanel"
              class="tab-pane ${context.selected_tab === TABS.ANNOTATIONS ? 'active' : ''}"&gt;
@@ -923,6 +921,415 @@ annotations ul {
                             </pre>
                     </div>
                 </section>
+
+                <!-- iviewer example - build-->
+                <section>
+                    <h3>Building</h3>
+                    <a style="font-size: 80%"
+                    href="https://github.com/ome/omero-iviewer/blob/master/README.rst">
+                    https://github.com/ome/omero-iviewer/blob/master/README.rst</a>
+                    <ul>
+                        <li>debug - npm run debug</li>
+                        <li>prod&nbsp;&nbsp;&nbsp; - npm run prod</li>
+                    </ul>
+                    <pre style="box-shadow: none;margin-top: 0px;margin-bottom:0px;">
+                        <code style="width: 900px;"
+                              class="bash">
+[harald@harald omero-iviewer]$ npm run debug
+
+&gt; @0.0.0 debug /opt/workspace/omero-iviewer
+&gt; ./ol3_viewer_prepare.sh DEV && ./prepare_build.sh DEV && webpack --config webpack.prod.config.js --progress --devtool source-map && ./deploy_build.sh
+
+omitting ol3-viewer build
+Preparing build. You are going to need npm at a minimum
+Fetching dependencies needed for build...
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@^1.0.0 (node_modules/chokidar/node_modules/fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.1.2: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+npm WARN @0.0.0 No repository field.
+npm WARN @0.0.0 No license field.
+Erasing build/deploy directories...
+Recreating build/deploy directories...
+Buildfile: /opt/workspace/omero-iviewer/build.xml
+
+clean-css-dir:
+  [mkdir] Created dir: /opt/workspace/omero-iviewer/build/css
+
+copy-images:
+   [copy] Copying 26 files to /opt/workspace/omero-iviewer/build/css/images
+
+prepare-css-debug:
+   [echo] Combine css...
+
+BUILD SUCCESSFUL
+Total time: 1 second
+Hash: a559a0efee63d796b1e2
+Version: webpack 3.6.0
+Time: 56964ms
+                                    Asset     Size  Chunks                    Chunk Names
+                                  main.js  2.29 MB       0  [emitted]  [big]  main
+             css/images/collapse-left.png  1.04 kB          [emitted]
+css/fonts/glyphicons-halflings-regular.woff  23.4 kB          [emitted]
+   css/images/ui-icons_777777_256x240.png  3.76 kB          [emitted]
+   css/images/ui-icons_555555_256x240.png  3.76 kB          [emitted]
+   css/images/ui-icons_ffffff_256x240.png  3.76 kB          [emitted]
+            css/images/collapse-right.png  1.03 kB          [emitted]
+                                  deps.js  1.09 MB       1  [emitted]  [big]  deps
+                                  init.js  5.81 kB       2  [emitted]         manifest
+                              main.js.map   3.4 MB       0  [emitted]         main
+                              deps.js.map  1.21 MB       1  [emitted]         deps
+                              init.js.map  5.89 kB       2  [emitted]         manifest
+ [1] ./src/utils/misc.js 14.6 kB {0} [built]
+ [2] ./src/utils/constants.js 5.48 kB {0} [built]
+ [4] ./src/app/context.js 26.9 kB {0} [built]
+ [5] ./src/events/events.js 5.45 kB {0} [built]
+[11] ./src/utils/ui.js 15.5 kB {0} [built]
+[13] (webpack)/buildin/global.js 509 bytes {0} [built]
+[44] multi aurelia-polyfills aurelia-loader-webpack ./src/main 52 bytes {0} [built]
+[app/index] ./src/app/index.js 3.32 kB {0} [built]
+[app/index.html] ./src/app/index.html 3.46 kB {0} [built]
+[48] (webpack)/buildin/harmony-module.js 596 bytes {0} [built]
+[49] ./src/main.js 2.17 kB {0} [built]
+[55] ./src/model/image_config.js 4.83 kB {0} [built]
+[62] (webpack)/buildin/amd-define.js 88 bytes {1} [built]
+[63] (webpack)/buildin/amd-options.js 82 bytes {1} [built]
+[95] multi d3 file-saver text-encoding 52 bytes {1} [built]
+  + 135 hidden modules
+Deploying built resources to plugin directory...
+                            </code>
+                    </pre>
+                  </section>
+
+                  <!-- iviewer building gotchas-->
+                  <section>
+                      <h3>Building - Gotchas</h3>
+                      <br/><br/>
+                      <ul>
+                          <li>Debug Target builds Openlayers Viewer only if not built before</li>
+                          <br/>
+                          <li>If you like to rebuild the ol viewer in 'debug', run: <i>ant</i></li>
+                          <br/>
+                          <li>Dependencies have changed. Run: rm -rf <i>node_modules</i></li>
+                      </ul>
+                  </section>
+
+                  <!-- ol3 within iviewer-->
+                  <section>
+                      <h3>Openlayers Viewer within IViewer</h3>
+                      <img style="width: 500px" src="images/ol3viewer_parts.png"></img>
+                      <ul style="width: 700px;">
+                          <li>Image Requesting & Rendering</li>
+                          <li>Image Interaction (Zoom, Pan, Rotate)</li>
+                          <li>Controls - Zoom, Birdseye, Scalebar, ...</li>
+                          <li>Regions Of Interest</li>
+                      </ul>
+                  </section>
+
+                  <!-- ol3 functionlity-->
+                  <section style="width: 1200px">
+                      <h3>Extending Functionality</h3>
+                      <div style="float: left;margin-top: 50px;width:300px">
+                          <img src="images/ol3_dirs.png"/>
+                      </div>
+                      <div style="float: left;width: 800px">
+                          <pre style="box-shadow: none;margin: 5px;">
+                              <code style="max-height: 500px"
+                                    class="javascript">
+goog.provide('ome.ol3.geom.Ellipse');
+
+goog.require('ol.geom.Polygon');
+
+/**
+ * @classdesc
+ * Ellipse is an extension of the built-in ol.geom.Polygon that will allow
+ * you to create ellipses within the open layers framework.
+ *
+ * At present the approach taken is aiming at best integration into openlayers
+ * as well as cross browser support. For HTMLCanvas there is a drawEllipse
+ * method which, toDate, is only supported by Chrome.
+ *
+ * That said, there are various methods out there how people accomplish the task
+ * of drawing en ellipse on an HTMLCanvas. They range from scaled circles, over
+ * sets of bezier curves to what is, undoubtedly, the most accurate method
+ * mathematically, namely to trace the outline for a given step size according to
+ * the following formulae for x,y:
+ * &lt;pre&gt;x = a * cos(theta)&lt;/pre&gt; and
+ * &lt;pre&gt;y = b * sin(theta)&lt;/pre&gt;
+ * see: {@link https://en.wikipedia.org/wiki/Ellipse}
+ *
+ * The latter technique is used here since it's accurate enough and produces
+ * a polygon of connected points which openlayers likes.
+ *
+ *
+ * @constructor
+ * @extends {ol.geom.Polygon}
+ *
+ * @param {number} cx the center x coordinate of the ellipse
+ * @param {number} cy the center y coordinate of the ellipse
+ * @param {number} rx the radius x distance of the ellipse
+ * @param {number} ry the radius y distance of the ellipse
+ * @param {Object=} transform an AffineTransform object according to omero marshal
+ */
+ome.ol3.geom.Ellipse = function(cx, cy, rx, ry, transform) {
+    // preliminary checks: are all mandatory paramters numeric
+    if (typeof cx !== 'number' || typeof cy !== 'number' ||
+            typeof rx !== 'number' || typeof ry !== 'number')
+        console.error("at least one ellipse param is not numeric!");
+
+    /**
+     * center x coordinate
+     * @type {number}
+     * @private
+     */
+    this.cx_ = cx;
+
+    /**
+     * center y coordinate
+     * @type {number}
+     * @private
+     */
+    this.cy_ = cy;
+
+    /**
+     * radius x distance
+     * @type {number}
+     * @private
+     */
+    this.rx_ = rx;
+
+    /**
+     * radius y distance
+     * @type {number}
+     * @private
+     */
+    this.ry_ = ry;
+
+    /**
+     * the transformation matrix of length 6
+     * @type {Array.&lt;number&gt;|null}
+     * @private
+     */
+    this.transform_ =
+        ome.ol3.utils.Transform.convertAffineTransformIntoMatrix(transform);
+
+    /**
+     * the step size for plotting
+     * @type {number}
+     * @private
+     */
+    this.step_ = 0.1;
+
+    // call super and hand in our coordinate array
+    goog.base(this, [this.getPolygonCoords()]);
+}
+goog.inherits(ome.ol3.geom.Ellipse, ol.geom.Polygon);
+
+/**
+ * Traces out the ellipse and returns the coords
+ * @return {Array.&lt;number&gt;} the coordinate array for the outline
+ */
+ome.ol3.geom.Ellipse.prototype.getPolygonCoords = function() {
+    // trace ellipse now and store coordinates
+    var coords = [];
+    for (var i = 0 * Math.PI, ii=2*Math.PI; i &lt; ii; i += this.step_) {
+        var x = this.cx_ + this.rx_ * Math.cos(i);
+        var y = this.cy_ + this.ry_ * Math.sin(i);
+        coords.push(
+            ome.ol3.utils.Transform.applyTransform(this.transform_, [x, y]));
+    }
+    if (coords.length &gt; 0) coords.push(coords[0]); // close polygon
+
+    return coords;
+}
+
+/**
+ * Gets the transformation associated with the ellipse
+ * @return {Object|null} the AffineTransform object (omero marshal) or null
+ */
+ome.ol3.geom.Ellipse.prototype.getTransform = function() {
+    return ome.ol3.utils.Transform.convertMatrixToAffineTransform(
+        this.transform_);
+}
+
+/**
+ * Gets the center of the ellipse in array form [cx,cy]
+ * @return {Array.&lt;number&gt;} the center of the ellipse as an array
+ */
+ome.ol3.geom.Ellipse.prototype.getCenter = function() {
+    return [this.cx_,this.cy_] ;
+}
+
+/**
+ * Sets the center of the ellipse using a coordinate array [cx, cy]
+ *
+ * @param {Array.&lt;number&gt;} value the center of the ellipse as an array
+ */
+ome.ol3.geom.Ellipse.prototype.setCenter = function(value) {
+    if (!ome.ol3.utils.Misc.isArray(value) ||
+        typeof value[0] !== 'number' || typeof value[1] !== 'number')
+            console.error(
+                "the center needs to be given as a numeric array [cx,cy]");
+    this.cx_ = value[0];
+    this.cy_ = value[1];
+}
+
+/**
+ * Gets the radius (distance x, distance y) of the ellipse in array form [rx,ry]
+ * @return {Array.&lt;number&gt;} the radius of the ellipse as an array
+ */
+ome.ol3.geom.Ellipse.prototype.getRadius = function() {
+    return [this.rx_, this.ry_];
+}
+
+/**
+ * Sets the radius (distance x, distance y) of the ellipse in array form [rx,ry]
+ *
+ * @param {Array.&lt;number&gt;} value the radius of the ellipse as an array
+ */
+ome.ol3.geom.Ellipse.prototype.setRadius = function(value) {
+    if (!ome.ol3.utils.Misc.isArray(value) ||
+        typeof value[0] !== 'number' || typeof value[1] !== 'number')
+            console.error("the radius needs to be given as a numeric array [cx,cy]");
+    this.rx_ = value[0];
+    this.ry_ = value[1];
+}
+
+/**
+ * First translate then store the newly translated coords
+ *
+ * @private
+ */
+ome.ol3.geom.Ellipse.prototype.translate = function(deltaX, deltaY) {
+    // delegate
+    if (this.transform_) {
+            this.transform_[4] += deltaX;
+            this.transform_[5] -= deltaY;
+            this.setCoordinates([this.getPolygonCoords()]);
+    } else {
+        ol.geom.SimpleGeometry.prototype.translate.call(this, deltaX, deltaY);
+        this.setCenter([this.cx_ + deltaX, this.cy_ + deltaY]);
+    }
+};
+
+/**
+ * First scale then store the newly scaled coords
+ *
+ * @private
+ */
+ome.ol3.geom.Ellipse.prototype.scale = function(factor) {
+    // delegate
+    if (this.transform_) {
+        this.transform_[0] *= factor;
+        this.transform_[1] *= factor;
+        this.transform_[2] *= factor;
+        this.transform_[3] *= factor;
+        this.setCoordinates([this.getPolygonCoords()]);
+    } else {
+        ol.geom.SimpleGeometry.prototype.scale.call(this, factor);
+        var radius = this.getRadius();
+        this.setRadius([radius[0] * factor, radius[1] * factor])
+    }
+};
+
+/**
+ * Make a complete copy of the geometry.
+ * @return {ome.ol3.geom.Ellipse} Clone.
+ */
+ome.ol3.geom.Ellipse.prototype.clone = function() {
+    return new ome.ol3.geom.Ellipse(
+        this.cx_, this.cy_, this.rx_, this.ry_, this.getTransform());
+};
+                                </code>
+                            </pre>
+                        <div/>
+                  </section>
+
+                  <!-- debugging ol3 viewer -->
+                  <section style="width: 1200px">
+                      <h3>Debugging ol3 viewer</h3>
+                      <br/>
+                      <img style="float:left;width: 550px;"src="images/ol3_debug.png"/>
+                      <ul class="smaller" style="margin-top: 50px;">
+                          <li>only debug: <i>ant build-debug plugin</i></li>
+                          <li>debug/prod: <i>ant build-plugin</i></li>
+                          <li>browse to: <i>http://localhost/ol3-viewer/1</i></li>
+                          <li>open browser's dev tools (F12)</li>
+                          <li>use <i>viewer</i> instance (see screen)</li>
+                      </ul>
+                  </section>
+
+                  <!-- ol3 viewer rules-->
+                  <section>
+                      <h3>Rules</h3>
+                      <br/>
+                      <ul class="smaller">
+                          <li>Functions have to be exported to be accessible once compiled</li>
+                      </ul>
+                      <pre style="box-shadow: none;margin: 5px;">
+                          <code style="max-height: 200px"
+                                class="javascript">
+                                ...
+goog.exportProperty(
+    ome.ol3.Viewer.prototype,
+    'doVeryUsefulAnimation',
+    ome.ol3.Viewer.prototype.doVeryUsefulAnimation);
+                            </code>
+                        </pre>
+
+                      <ul class="smaller">
+                          <li>Use deep copies for parameters/data when calling from iviewer</li>
+                          <li>Only Exception: eventbus</li>
+                      </ul>
+                      <pre style="box-shadow: none;margin: 5px;">
+                          <code style="max-height: 200px"
+                                class="javascript">
+                                ...
+this.viewer.someExposedFunction(Object.assign({}, someDataObject));
+                            </code>
+                        </pre>
+                  </section>
+
+                  <!-- ol3 viewer - how to use in iviewer-->
+                  <section>
+                      <h3>How to use the ol3 viewer in IViewer?</h3>
+                      <br/>
+                      <div>src/viewers/ol3-viewer.js</div>
+                      <pre style="box-shadow: none;margin: 10px;">
+                          <code style="max-height: 450px"
+                                class="javascript">
+                                ...
+/**
+ * Instantiates a new ol3 viewer once image data is ready
+ *
+ * @memberof Ol3Viewer
+ */
+initViewer() {
+    // tweak initParams for ol3viewer to reflect iviewer app name
+    let ol3initParams = Object.assign({}, this.context.initParams);
+    ol3initParams[PLUGIN_PREFIX] = this.context.getPrefixedURI(IVIEWER);
+
+    // create viewer instance
+    this.viewer =
+        new ol3.Viewer(
+            this.image_config.image_info.image_id, {
+                 eventbus : this.context.eventbus,
+                 server : this.context.server,
+                 data: this.image_config.image_info.tmp_data,
+                 initParams :  ol3initParams,
+                 container: this.container
+             });
+    delete this.image_config.image_info.tmp_data;
+
+    // only the first request should be affected
+    this.context.resetInitParams();
+    // use existing interpolation setting
+    this.viewer.enableSmoothing(this.context.interpolate);
+    this.resizeViewer({window_resize: true, delay: 100});
+    this.viewer.doVeryUsefulAnimation(1000)
+}
+                            </code>
+                        </pre>
+                  </section>
+
 
 
         <script src="reveal-js/lib/js/head.min.js"></script>
