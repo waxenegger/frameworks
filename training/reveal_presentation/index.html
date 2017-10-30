@@ -100,6 +100,7 @@
                     <ul>
                         <li>Environment/Setup</li>
                         <li>'Best Practices/Design'</li>
+                        <li>Open With</li>
                         <li>Figure vs. IViewer</li>
                         <li>Example Figure</li>
                         <li>Example IViewer</li>
@@ -223,6 +224,58 @@
                         <li>Release/Bugfix Cycles</li>
                         <li>Cross origin implications (jsonp and cors)</li>
                     </ul>
+                </section>
+
+                <!-- openwith.js -->
+                <section style="width: 1000px;">
+                    <h2>Open With</h2>
+                    <ul style="width: 800px;">
+                        <li>script file (openwith.js)</li>
+                        <li>adding omero config entry</li>
+                    </ul>
+                    <pre style="box-shadow: none;margin-top: 5px;margin-bottom:5px">
+                        <code style="max-height: 250px" class="javascript">
+OME.setOpenWithUrlProvider("omero_iviewer", function(selected, url) {
+    selected_count = selected.length;
+    initial_id = selected[0].id;
+    initial_type = selected[0].type;
+
+    // we short-circuit for anything that is not an image
+    if (initial_type !== 'image') {
+        return url + "?" + initial_type + "=" + initial_id;
+    }
+
+    // add image(s)
+    url += "?images=";
+    for (var i=0;i&lt;selected_count;i++) {
+        if (i !== 0) url += ',';
+        url += selected[i].id;
+    }
+    // add parent for single image
+    if (selected_count === 1 && $ && $.jstree) {
+        try {
+            var inst = $.jstree.reference('#dataTree');
+            var parent = OME.getTreeImageContainerBestGuess(initial_id);
+            if (parent && parent.data) {
+                if (parent.type === 'dataset')
+                    url += '&amp;' + parent.type + '=' + parent.data.id;
+            }
+        } catch(err) {
+            console.log(err);
+        }
+    }
+
+    return url;
+});
+                        </code>
+                    </pre>
+                    <pre style="box-shadow: none;margin-top: 5px;margin-bottom:5px">
+                        <code class="bash">
+$ bin/omero config append omero.web.open_with '["omero_iviewer", "omero_iviewer_index",
+  {"supported_objects":["images", "dataset", "well"],
+   "script_url": "omero_iviewer/openwith.js", "label": "OMERO.iviewer"}]'
+                        </code>
+                    </pre>
                 </section>
 
                 <!-- figure vs. iviewer -->
