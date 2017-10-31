@@ -853,6 +853,8 @@ export class Annotations {
    * @memberof Annotations
    */
   bind() {
+      if (this.image_annotations === null) return;
+
       // listen for image annotation changes
       this.image_annotations_changes =
           this.bindingEngine.collectionObserver(
@@ -1062,6 +1064,18 @@ Deploying built resources to plugin directory...
                           <li>If you like to rebuild the ol viewer in 'debug', run: <i>ant</i></li>
                           <br/>
                           <li>Dependencies have changed. Run: rm -rf <i>node_modules</i></li>
+                      </ul>
+                  </section>
+
+                  <!-- iviewer gotchas-->
+                  <section>
+                      <h3>Coding - Gotchas</h3>
+                      <br/><br/>
+                      <ul class="">
+                          <li>Beware async nature: data readiness in view (null/type checks)</li>
+                          <li>Beware lifecycle nature: bind, unbind, attached, detached</li>
+                          <li>Use destruction methods: unbind/detached (observer disposal, jquery widget destroy)</li>
+                          <li>Favor plain html and binding over library widgets and updating (if possible)</li>
                       </ul>
                   </section>
 
