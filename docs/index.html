@@ -1397,6 +1397,86 @@ initViewer() {
                         </pre>
                   </section>
 
+                  <!-- development workflow-->
+                  <section>
+                      <h3>Development Workflow</h3>
+                      <br/>
+                      <ul class="smaller">
+                          <li>local development, deployment and testing</li>
+                          <li>Opening PR against project</li>
+                          <li>CI merge (periodic/on-demand runs):<br/>
+                              <a href="https://ci.openmicroscopy.org/view/Web/job/iviewer-merge/">
+                              https://ci.openmicroscopy.org/view/Web/job/iviewer-merge</a>
+                              <a href="https://ci.openmicroscopy.org/view/Web/job/FIGURE-merge/">
+                              https://ci.openmicroscopy.org/view/Web/job/FIGURE-merge/</a>
+                          </li>
+                          <li>CI web dev merge deploy (periodic/on-demand runs):<br/>
+                              <a href="https://ci.openmicroscopy.org/view/Web/job/WEB-DEV-merge-deploy/">
+                              https://ci.openmicroscopy.org/view/Web/job/WEB-DEV-merge-deploy/
+                              </a>
+                          </li>
+                          <li>if above steps finish successfully changes can be seen/tested:
+                              <a href="http://web-dev-merge.openmicroscopy.org/">
+                              http://web-dev-merge.openmicroscopy.org/</a>
+                          </li>
+                      </ul>
+                  </section>
+
+                  <!--  ci configuration changes -->
+                  <section>
+                      <h3>CI Configuration Changes</h3>
+                      <br/>
+                      <ul class="smaller">
+                          <li>ask Jean-Marie who gave me these instructions ;-)</li>
+                          <li>
+                             <a href="https://github.com/openmicroscopy/management_tools">
+                             https://github.com/openmicroscopy/management_tools</a>
+                          </li>
+                          <li>make changes to respective sections:<br/>
+                              ci/config/WEB-DEV-merge-deploy/webapps.omero<br/>
+                              ci/config/WEB-DEV-latest-deploy/webapps.omero
+                          </li>
+                          <li>
+                              Open PR -&gt; once PR is merged -&gt; run ...
+                          </li>
+                          <li>
+                              <a href="https://ci.openmicroscopy.org/view/Mgmt/job/MANAGEMENT_TOOLS-latest-deploy/">
+                                  https://ci.openmicroscopy.org/view/Mgmt/job/MANAGEMENT_TOOLS-latest-deploy/
+                              </a>
+                          </li>
+                      </ul>
+                  </section>
+
+                  <!--  pypi deployment -->
+                  <section>
+                      <h3>PyPi Download/Deployment</h3>
+                      <br/><br/>
+                      <ul>
+                          <li>
+                              Releases: <a href="https://pypi.python.org/pypi">https://pypi.python.org/pypi</a>
+                          </li>
+                          <li>Follow Guide:
+                              <a href="https://github.com/openmicroscopy/ome-documentation/blob/develop/omero/developers/Web/CreateApp.rst#make-your-app-installable-from-pypi">
+                                  Make your App installable
+                              </a>
+                          </li>
+                          <li>
+                              <a href="https://github.com/ome/omero-iviewer/blob/master/plugin/setup.py">
+                                  setup.py <i>(iviewer)</i>
+                              </a>
+                          </li>
+                          <li>
+                              <a href="https://github.com/ome/omero-iviewer/blob/master/plugin/setup.cfg">
+                                  setup.cfg <i>(iviewer)</i>
+                              </a>
+                          </li>
+                          <li>
+                              <a href="https://github.com/ome/omero-iviewer/blob/master/plugin/MANIFEST.in">
+                                  MANIFEST.in <i>(iviewer)</i>
+                              </a>
+                          </li>
+                      </ul>
+                  </section>
 
 
         <script src="reveal-js/lib/js/head.min.js"></script>
