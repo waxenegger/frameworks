@@ -321,11 +321,11 @@ $ bin/omero config append omero.web.open_with '["omero_iviewer", "omero_iviewer_
                         <li>Setup Omero Server & Web</li>
                         <li>Check out respective Project from git</li>
                         <li>add plugins (opt: deps) to PYTHONPATH</li>
+                        <li>install js requirements (see READMEs): npm/node.js</li>
                         <li>run build/deploy</li>
                     </ul>
                     <br/><br/>
                     e.g. <i>.bashrc (simple export would suffice)</i>
-                    <br/>
                     <pre style="box-shadow: none;">
                         <code class="bash">
 TO_BE_ADDED_TO_PYTHONPATH=("/opt/workspace/omero-marshal" "/opt/workspace/omero-iviewer/plugin" "/opt/workspace/omero-figure")
@@ -336,6 +336,75 @@ do
     export PYTHONPATH=$PYTHONPATH:$p
   fi
 done
+                        </code>
+                    </pre>
+                </section>
+
+                <!-- excursion build tools -->
+                <section>
+                    <h2>Excursion - build tools & dependencies</h2>
+                    <ul style="width: 600px;" class="smaller">
+                        <li>define deps: <i>package.json</i></li>
+                        <li>install deps: <i>npm install</i></li>
+                        <li><a href="https://gruntjs.com/">grunt</a></li>
+                        <li><a href="https://webpack.js.org/">webpack</a></li>
+                    </ul>
+                    <pre style="box-shadow: none;">
+                        <code class="json">
+{
+  "version": "0.0.0",
+  "description": "OMERO.iviewer",
+  "scripts": {
+    "dev": "./ol3_viewer_prepare.sh DEV && ant prepare-css && webpack-dev-server --config webpack.dev.config.js --hot --inline --progress --devtool eval",
+    "debug": "./ol3_viewer_prepare.sh DEV && ./prepare_build.sh DEV && webpack --config webpack.prod.config.js --progress --devtool source-map && ./deploy_build.sh",
+    "prod": "./ol3_viewer_prepare.sh && ./prepare_build.sh && webpack -p --config webpack.prod.config.js --progress && ./deploy_build.sh",
+    "docs": "./generate_docs.sh"
+  },
+  "dependencies": {
+    "aurelia-bootstrapper": "2.1.1",
+    "aurelia-event-aggregator": "1.0.0",
+    "aurelia-fetch-client": "1.1.2",
+    "aurelia-framework": "1.1.4",
+    "aurelia-history-browser": "1.0.0",
+    "aurelia-loader-webpack": "2.1.0",
+    "aurelia-logging-console": "1.0.0",
+    "aurelia-pal-browser": "1.2.1",
+    "aurelia-polyfills": "1.2.2",
+    "aurelia-router": "1.3.0",
+    "aurelia-templating": "1.4.2",
+    "aurelia-templating-binding": "1.3.0",
+    "aurelia-templating-resources": "1.4.0",
+    "aurelia-templating-router": "1.1.0",
+    "bluebird": "3.5.0",
+    "bootstrap": "3.3.7",
+    "jquery": "2.2.4",
+    "jquery-ui" : "1.12.1",
+    "spectrum-colorpicker" : "1.8.0",
+    "d3" : "4.2.7",
+    "file-saver" : "1.3.3",
+    "text-encoding" : "0.6.4"
+  },
+  "devDependencies": {
+    "aurelia-tools": "1.0.0",
+    "aurelia-webpack-plugin": "2.0.0-rc.2",
+    "babel-core": "6.26.0",
+    "babel-eslint": "7.2.3",
+    "babel-loader": "7.1.2",
+    "babel-plugin-transform-decorators-legacy": "1.3.4",
+    "babel-plugin-transform-class-properties": "6.24.1",
+    "babel-preset-env": "1.6.0",
+    "css-loader": "0.28.4",
+    "eslint": "2.2.0",
+    "expose-loader": "0.7.3",
+    "file-loader": "0.11.2",
+    "html-loader": "0.4.5",
+    "style-loader": "0.18.2",
+    "url-loader": "0.5.9",
+    "webpack": "3.6.0",
+    "webpack-dev-server": "2.8.0",
+    "html-webpack-plugin": "2.29.0"
+  }
+}
                         </code>
                     </pre>
                 </section>
@@ -1093,11 +1162,15 @@ Deploying built resources to plugin directory...
 
                   <!-- ol3 functionlity-->
                   <section style="width: 1200px">
-                      <h3>Extending Functionality</h3>
+                      <h3>Openlayers - Extending Functionality</h3>
                       <div style="float: left;margin-top: 50px;width:300px">
                           <img src="images/ol3_dirs.png"/>
                       </div>
                       <div style="float: left;width: 800px">
+                          Ol3 uses:
+                          <a href="https://developers.google.com/closure/">
+                              Google Closure Tools
+                          </a>
                           <pre style="box-shadow: none;margin: 5px;">
                               <code style="max-height: 500px"
                                     class="javascript">
@@ -1363,6 +1436,7 @@ this.viewer.someExposedFunction(Object.assign({}, someDataObject));
                       <pre style="box-shadow: none;margin: 10px;">
                           <code style="max-height: 450px"
                                 class="javascript">
+import {ol3} from '../../libs/ol3-viewer.js';
                                 ...
 /**
  * Instantiates a new ol3 viewer once image data is ready
